@@ -31,31 +31,18 @@
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
-        
-        let firebaseConfig = null;
+        // 使用您的設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZkZCIk5UWBd-UnHmMCXr1BqTYZPZCkgA",
+            authDomain: "megaia-medical-dashboard.firebaseapp.com",
+            projectId: "megaia-medical-dashboard",
+            storageBucket: "megaia-medical-dashboard.firebasestorage.app",
+            messagingSenderId: "740007881577",
+            appId: "1:740007881577:web:9e3d78678b484ddead6bf8",
+            measurementId: "G-PT1B3BVH50"
+        };
 
-        // 1. 優先嘗試讀取環境變數 (開發環境用)
-        if (typeof __firebase_config !== 'undefined') {
-            try {
-                firebaseConfig = JSON.parse(__firebase_config);
-            } catch (e) { console.warn("Env config parse error"); }
-        }
-
-        // 2. 如果沒有環境變數 (例如在 GitHub Pages)，則使用您提供的設定
-        // [FIXED] 這裡已經填入您提供的正式設定碼
-        if (!firebaseConfig) {
-            firebaseConfig = {
-                apiKey: "AIzaSyDZkZCIk5UWBd-UnHmMCXr1BqTYZPZCkgA",
-                authDomain: "megaia-medical-dashboard.firebaseapp.com",
-                projectId: "megaia-medical-dashboard",
-                storageBucket: "megaia-medical-dashboard.firebasestorage.app",
-                messagingSenderId: "740007881577",
-                appId: "1:740007881577:web:9e3d78678b484ddead6bf8",
-                measurementId: "G-PT1B3BVH50"
-            };
-        }
-
-        if (firebaseConfig) {
+        try {
             const app = initializeApp(firebaseConfig);
             
             // Expose Firebase to window for React to use
@@ -70,13 +57,13 @@
             window.collection = collection;
             window.onSnapshot = onSnapshot;
             
-            // App ID for data separation (Default to prod)
-            window.appId = typeof __app_id !== 'undefined' ? __app_id : 'medical-dashboard-prod';
-            window.__initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : undefined;
+            // App ID for data separation
+            window.appId = 'megaia-production'; 
+            window.__initial_auth_token = undefined;
             
             console.log("Firebase initialized successfully.");
-        } else {
-            console.error("Firebase config missing. Cloud features disabled.");
+        } catch (e) {
+            console.error("Firebase init failed:", e);
         }
     </script>
 
@@ -85,22 +72,10 @@
             theme: {
                 extend: {
                     colors: {
-                        medical: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        brand: {
-                            red: '#D32F2F', 
-                        }
+                        medical: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                        brand: { red: '#D32F2F' }
                     },
-                    fontFamily: {
-                        sans: ['Microsoft JhengHei', 'Heiti TC', 'Segoe UI', 'Roboto', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Microsoft JhengHei', 'Heiti TC', 'Segoe UI', 'Roboto', 'sans-serif'] }
                 }
             }
         }
@@ -109,170 +84,28 @@
     <style>
         body { background-color: #f8fafc; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
-        
-        /* Typography */
-        .metric-label { 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            color: #64748b; 
-            margin-bottom: 4px;
-            white-space: pre-wrap;
-            line-height: 1.2;
-        }
-        .metric-value { 
-            font-family: 'Segoe UI', sans-serif; 
-            font-weight: 800; 
-            color: #334155; 
-            line-height: 1.1; 
-        }
-        
-        /* Card */
-        .stat-card {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .card-header {
-            background: #ffffff;
-            padding: 12px 16px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 1rem;
-            font-weight: 800;
-            color: #475569;
-            display: flex;
-            align-items: center;
-        }
+        .metric-label { font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 4px; white-space: pre-wrap; line-height: 1.2; }
+        .metric-value { font-family: 'Segoe UI', sans-serif; font-weight: 800; color: #334155; line-height: 1.1; }
+        .stat-card { background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 100%; }
+        .card-header { background: #ffffff; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 1rem; font-weight: 800; color: #475569; display: flex; align-items: center; }
         .card-content { padding: 16px; flex: 1; }
-
-        /* Staff Section */
-        .staff-section-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-            padding-bottom: 4px;
-            border-bottom: 2px solid #f1f5f9;
-            color: #64748b;
-        }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
+        .staff-section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 2px solid #f1f5f9; color: #64748b; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.9rem; }
         .info-label { color: #64748b; font-size: 0.8rem; font-weight: 600; }
         .info-val-container { display: flex; align-items: center; }
         .info-val { font-weight: 700; color: #334155; }
-        
-        /* Ranking Icons */
-        .rank-icon { 
-            margin-left: 8px; 
-            font-size: 1.4rem; 
-            line-height: 1;
-            filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2));
-        }
-
-        /* Global Sales Rank Badge */
-        .global-rank-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            font-size: 0.8rem;
-            font-weight: 900;
-            color: white;
-            margin-left: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            font-family: 'Arial', sans-serif;
-        }
+        .rank-icon { margin-left: 8px; font-size: 1.4rem; line-height: 1; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2)); }
+        .global-rank-badge { display: inline-flex; align-items: center; justify-content: center; padding: 2px 8px; height: 24px; min-width: 24px; border-radius: 12px; font-size: 0.75rem; font-weight: 900; color: white; margin-left: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); font-family: 'Arial', sans-serif; white-space: nowrap; }
         .rank-1 { background: linear-gradient(135deg, #FFD700, #FDB931); border: 1px solid #C5A000; color: #7a5c00; text-shadow: 0px 1px 0px rgba(255,255,255,0.4); }
         .rank-2 { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); border: 1px solid #9E9E9E; color: #555; text-shadow: 0px 1px 0px rgba(255,255,255,0.4); }
         .rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); border: 1px solid #8B4513; color: #fff; }
-        .rank-other { background-color: #1e293b; border: 1px solid #0f172a; }
-
-        /* Role Badge */
-        .role-badge {
-            background-color: #1e293b !important;
-            color: #ffffff !important;
-            font-weight: 700;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            border: 1px solid #0f172a;
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        /* Branch Badge */
-        .branch-badge {
-            background-color: #0284c7; 
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border-radius: 9999px;
-            border: 1px solid #0369a1;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-            margin-left: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        /* Seniority Badge */
-        .seniority-badge {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border-radius: 9999px;
-            border: 1px solid #cbd5e1;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-            margin-left: 8px;
-        }
-        
-        /* Logo placeholder styling */
-        .logo-img {
-            max-height: 40px;
-            width: auto;
-            object-fit: contain;
-        }
-        
-        /* Stat Box Rank Icon */
-        .stat-box-rank {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 1.2rem;
-        }
-
-        /* Filter Dropdown */
-        .filter-dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 4px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            padding: 0.5rem;
-            z-index: 50;
-            min-width: 220px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
+        .rank-other { background-color: #64748b; border: 1px solid #475569; font-size: 0.7rem; }
+        .role-badge { background-color: #1e293b !important; color: #ffffff !important; font-weight: 700; font-size: 0.8rem; padding: 4px 10px; border-radius: 9999px; border: 1px solid #0f172a; display: inline-block; white-space: nowrap; }
+        .branch-badge { background-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid #0369a1; display: inline-flex; align-items: center; white-space: nowrap; margin-left: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .seniority-badge { background-color: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; white-space: nowrap; margin-left: 8px; }
+        .logo-img { max-height: 80px; width: auto; object-fit: contain; }
+        .stat-box-rank { position: absolute; top: 4px; right: 4px; font-size: 1.2rem; }
+        .filter-dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 4px; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 0.5rem; z-index: 50; min-width: 220px; max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -281,7 +114,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Icons ---
         const Icon = ({ icon, size = 18, className = "" }) => {
             const [svgHtml, setSvgHtml] = useState("");
             useEffect(() => {
@@ -298,7 +130,7 @@
             return <span dangerouslySetInnerHTML={{ __html: svgHtml }} className="flex items-center justify-center" />;
         };
 
-        // --- Constants ---
+        // --- CONSTANTS ---
         const SENIORITY_RANGES = [
             { id: '0-1', label: '1年以下 (新人)', min: 0, max: 1 },
             { id: '1-2', label: '1-2年', min: 1, max: 2 },
@@ -344,23 +176,16 @@
              return parseFloat(num).toFixed(1).replace(/\.0$/, '') + '%';
         }
 
-        // --- SENIORITY CALCULATION (Enhanced 2.0) ---
+        // --- SENIORITY CALCULATION ---
         const calculateSeniorityInfo = (val) => {
             if (!val) return { text: "未知", years: 0 };
             const today = new Date('2026-02-11');
             let date;
-
             const strVal = String(val).trim();
-            // Regex for YYYY-MM-DD or YYYY/MM/DD
             const dateMatch = strVal.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-
             if (dateMatch) {
-                const year = parseInt(dateMatch[1], 10);
-                const month = parseInt(dateMatch[2], 10) - 1; 
-                const day = parseInt(dateMatch[3], 10);
-                date = new Date(year, month, day);
-            } 
-            else if (!isNaN(parseFloat(val)) && isFinite(val)) {
+                date = new Date(parseInt(dateMatch[1]), parseInt(dateMatch[2]) - 1, parseInt(dateMatch[3]));
+            } else if (!isNaN(parseFloat(val)) && isFinite(val)) {
                 if (parseFloat(val) > 20000) {
                      const serial = parseFloat(val);
                      date = new Date(Math.round((serial - 25569) * 86400 * 1000));
@@ -372,12 +197,8 @@
             if (!date || isNaN(date.getTime())) return { text: "未知", years: 0 };
 
             let months = (today.getFullYear() - date.getFullYear()) * 12 + (today.getMonth() - date.getMonth());
-            if (today.getDate() < date.getDate()) {
-                months--;
-            }
-            
+            if (today.getDate() < date.getDate()) months--;
             if (months < 0) return { text: "未到職", years: 0 };
-            
             const y = Math.floor(months / 12);
             const m = months % 12;
             const text = y > 0 ? (m > 0 ? `${y}年${m}個月` : `${y}年`) : `${m}個月`;
@@ -389,28 +210,19 @@
             if (!items || items.length === 0) return items;
             const rankedItems = items.map(item => ({ ...item, ranks: {} }));
             const count = rankedItems.length;
-
             RANK_METRICS.forEach(metric => {
                 const sorted = [...rankedItems].sort((a, b) => (b.stats[metric] || 0) - (a.stats[metric] || 0));
-                
                 sorted.forEach((item, index) => {
                     const originalItem = rankedItems.find(ri => {
-                        if (ri.name && item.name) {
-                            return ri.name === item.name && ri.branch === item.branch;
-                        }
+                        if (ri.name && item.name) return ri.name === item.name && ri.branch === item.branch;
                         return ri.branchName && ri.branchName === item.branchName;
                     });
-                    
                     if (!originalItem) return;
-
                     if (index === 0) originalItem.ranks[metric] = 'top1';
                     else if (index === 1) originalItem.ranks[metric] = 'top2';
                     else if (index === 2) originalItem.ranks[metric] = 'top3';
-                    
                     if (bottomThreshold > 0 && index >= count - bottomThreshold) {
-                        if (!originalItem.ranks[metric]) {
-                            originalItem.ranks[metric] = 'bottom';
-                        }
+                        if (!originalItem.ranks[metric]) originalItem.ranks[metric] = 'bottom';
                     }
                 });
             });
@@ -423,23 +235,16 @@
                 if (branch.staff) {
                     branch.staff.forEach(s => {
                         const sales = s.stats.totalSales || s.stats.monthlySales || 0;
-                        allStaff.push({
-                            ...s,
-                            rawSales: sales,
-                            branchName: branch.branchName 
-                        });
+                        allStaff.push({ ...s, rawSales: sales, branchName: branch.branchName });
                     });
                 }
             });
-
             allStaff.sort((a, b) => b.rawSales - a.rawSales);
-
             const top10Map = {};
             allStaff.forEach((s, index) => {
                 const key = `${s.name}_${s.branchName}`;
                 top10Map[key] = index + 1;
             });
-
             return top10Map;
         };
 
@@ -447,7 +252,6 @@
         const parseBranchSheet = (sheet) => {
             const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
             if (!data || data.length < 3) return null;
-
             let headerIdx = -1;
             for(let i=0; i<Math.min(data.length, 20); i++) {
                 if(JSON.stringify(data[i]).includes("202") || JSON.stringify(data[i]).includes("年度")) {
@@ -456,11 +260,9 @@
                 }
             }
             if(headerIdx === -1) headerIdx = 1;
-
             const headerRow = data[headerIdx]; 
             const periods = [];
             const periodIndices = {};
-            
             if(headerRow && Array.isArray(headerRow)) {
                 headerRow.forEach((cell, idx) => {
                     if (cell && (String(cell).includes('202') || String(cell).includes('年度'))) {
@@ -472,15 +274,12 @@
                     }
                 });
             }
-
             const branches = {};
             const branchOrder = []; 
             let currentBranch = null;
-
             for (let i = headerIdx + 1; i < data.length; i++) {
                 const row = data[i];
                 if (!row) continue;
-                
                 const colB = row[1]; 
                 if (colB) {
                     currentBranch = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
@@ -489,7 +288,6 @@
                         branchOrder.push(currentBranch);
                     }
                 }
-
                 const metricName = row[2]; 
                 if (currentBranch && metricName && METRIC_MAP[metricName.trim()]) {
                     const key = METRIC_MAP[metricName.trim()];
@@ -498,30 +296,23 @@
                         const val = row[idx];
                         if (!branches[currentBranch][p]) branches[currentBranch][p] = {};
                         let numVal = cleanNumber(val);
-                        if ((key.includes('Rate') || key.includes('比率')) && Math.abs(numVal) <= 10.0 && numVal !== 0) {
-                            numVal = numVal * 100;
-                        }
+                        if ((key.includes('Rate') || key.includes('比率')) && Math.abs(numVal) <= 10.0 && numVal !== 0) numVal = numVal * 100;
                         branches[currentBranch][p][key] = numVal;
                     });
                 }
             }
-            
             Object.keys(branches).forEach(b => {
                 Object.keys(branches[b]).forEach(p => {
                     const stats = branches[b][p];
-                    if (stats.monthlyGoal && stats.monthlyAchieved) {
-                        stats.achievedRate = (stats.monthlyAchieved / stats.monthlyGoal) * 100;
-                    }
+                    if (stats.monthlyGoal && stats.monthlyAchieved) stats.achievedRate = (stats.monthlyAchieved / stats.monthlyGoal) * 100;
                 });
             });
-
             return { branches, periods, branchOrder };
         };
 
         const parseStaffSheet = (sheet) => {
             const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
             if (!data || data.length < 5) return null;
-
             let staffRowIdx = -1;
             for(let i=0; i<Math.min(data.length, 20); i++) {
                 if(JSON.stringify(data[i]).includes("店長") || JSON.stringify(data[i]).includes("諮詢")) {
@@ -530,16 +321,13 @@
                 }
             }
             if(staffRowIdx === -1) staffRowIdx = 2; 
-
             const branchRowIdx = staffRowIdx - 1;
             const branchRow = data[branchRowIdx];
             const staffRow = data[staffRowIdx];
             const joinDateRow = data[staffRowIdx + 1]; 
-            
             const staffList = [];
             const colToStaff = {}; 
             let currentBranch = null;
-
             if(Array.isArray(staffRow)) {
                 for (let c = 0; c < staffRow.length; c++) {
                     if (branchRow && branchRow[c]) {
@@ -547,43 +335,30 @@
                         if (bRaw.includes('\n')) bRaw = bRaw.split('\n')[0];
                         currentBranch = bRaw.trim();
                     }
-
                     const sRaw = staffRow[c];
                     if (sRaw && String(sRaw).includes('\n')) {
                         let name = String(sRaw);
                         let role = "人員";
-                        
                         if (name.includes('-(')) {
                             const parts = name.split('-(');
                             name = parts[0].trim();
                             let rolePart = parts[1] || "";
                             rolePart = rolePart.replace(/^[A-Z0-9]+\)/, ''); 
                             role = rolePart.replace(/\n/g, '').trim();
-                        } 
-                        else if (name.includes('\n')) {
+                        } else if (name.includes('\n')) {
                             const parts = name.split('\n');
                             name = parts[0].trim();
                             role = parts[1].trim();
                         }
-
                         let seniorityInfo = { text: "未知", years: 0 };
-                        if (joinDateRow && joinDateRow[c]) {
-                            seniorityInfo = calculateSeniorityInfo(joinDateRow[c]);
-                        }
-
+                        if (joinDateRow && joinDateRow[c]) seniorityInfo = calculateSeniorityInfo(joinDateRow[c]);
                         if (name && currentBranch) {
-                            colToStaff[c] = { 
-                                name, role, branch: currentBranch, 
-                                seniority: seniorityInfo.text, 
-                                seniorityYears: seniorityInfo.years,
-                                stats: {} 
-                            };
+                            colToStaff[c] = { name, role, branch: currentBranch, seniority: seniorityInfo.text, seniorityYears: seniorityInfo.years, stats: {} };
                             staffList.push(colToStaff[c]);
                         }
                     }
                 }
             }
-
             for (let i = staffRowIdx + 2; i < data.length; i++) {
                 const row = data[i];
                 if (!row) continue;
@@ -593,9 +368,7 @@
                     Object.keys(colToStaff).forEach(colIdx => {
                         const val = row[colIdx];
                         let numVal = cleanNumber(val);
-                        if ((key.includes('Rate') || key.includes('比率')) && Math.abs(numVal) <= 10.0 && numVal !== 0) {
-                            numVal = numVal * 100;
-                        }
+                        if ((key.includes('Rate') || key.includes('比率')) && Math.abs(numVal) <= 10.0 && numVal !== 0) numVal = numVal * 100;
                         colToStaff[colIdx].stats[key] = numVal;
                     });
                 }
@@ -604,17 +377,14 @@
         };
 
         // --- UI Components ---
-        
         const RankIcon = ({ rank }) => {
             if (!rank) return null;
-            let icon = null;
-            if (rank === 'top1') icon = <span title="第1名" className="rank-icon">🥇</span>;
-            else if (rank === 'top2') icon = <span title="第2名" className="rank-icon">🥈</span>;
-            else if (rank === 'top3') icon = <span title="第3名" className="rank-icon">🥉</span>;
-            else if (rank === 'bottom') icon = <span title="需加強" className="rank-icon">⚠️</span>;
-            return icon;
+            if (rank === 'top1') return <span title="第1名" className="rank-icon">🥇</span>;
+            if (rank === 'top2') return <span title="第2名" className="rank-icon">🥈</span>;
+            if (rank === 'top3') return <span title="第3名" className="rank-icon">🥉</span>;
+            if (rank === 'bottom') return <span title="需加強" className="rank-icon">⚠️</span>;
+            return null;
         };
-
         const GlobalSalesRankIcon = ({ rank }) => {
             if (!rank) return null;
             let bgClass = "rank-other";
@@ -623,14 +393,12 @@
             else if (rank === 3) bgClass = "rank-3";
             return <span className={`global-rank-badge ${bgClass}`}>{rank}</span>;
         };
-
         const StatBox = ({ label, value, isMoney, isPercent, highlight, rank }) => {
             let displayVal = value;
             if (isMoney) displayVal = formatMoney(value);
             if (isPercent) displayVal = formatPercent(value);
             const textColor = highlight ? "text-medical-800" : "text-slate-800";
             const bgColor = highlight ? "bg-medical-50 border-medical-200 shadow-sm" : "bg-white border-slate-100";
-
             return (
                 <div className={`flex flex-col p-2 rounded border ${bgColor} h-full justify-center transition-colors relative`}>
                     <span className="metric-label">{label}</span>
@@ -639,32 +407,23 @@
                 </div>
             );
         };
-
         const RevenueProgress = ({ goal, achieved, rate }) => (
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-4">
                 <div className="flex justify-between items-end mb-2">
                     <div className="flex flex-col">
                         <span className="text-sm font-bold text-slate-500">營收達成率</span>
-                        <span className={`text-3xl font-extrabold ${rate >= 100 ? 'text-green-600' : 'text-medical-600'}`}>
-                            {formatPercent(rate)}
-                        </span>
+                        <span className={`text-3xl font-extrabold ${rate >= 100 ? 'text-green-600' : 'text-medical-600'}`}>{formatPercent(rate)}</span>
                     </div>
                     <div className="text-right">
                         <div className="text-xs text-slate-400 font-bold mb-0.5">達成 / 目標</div>
-                        <div className="text-sm font-bold text-slate-600">
-                            {formatMoney(achieved)} / {formatMoney(goal)}
-                        </div>
+                        <div className="text-sm font-bold text-slate-600">{formatMoney(achieved)} / {formatMoney(goal)}</div>
                     </div>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                    <div 
-                        className={`h-full rounded-full transition-all duration-700 ${rate >= 100 ? 'bg-green-500' : 'bg-medical-500'}`} 
-                        style={{ width: `${Math.min(rate, 100)}%` }}
-                    ></div>
+                    <div className={`h-full rounded-full transition-all duration-700 ${rate >= 100 ? 'bg-green-500' : 'bg-medical-500'}`} style={{ width: `${Math.min(rate, 100)}%` }}></div>
                 </div>
             </div>
         );
-
         const NewOldList = ({ type, stats, ranks }) => {
             const isNew = type === 'new';
             const prefix = isNew ? 'new' : 'old';
@@ -675,50 +434,26 @@
             const valueColor = isNew ? 'text-orange-900' : 'text-blue-900';
             const blockBg = isNew ? 'bg-orange-50/30' : 'bg-blue-50/30'; 
             const blockBorder = isNew ? 'border-orange-100' : 'border-blue-100';
-
             return (
                 <div className={`p-3 rounded-lg border ${blockBorder} ${blockBg} flex flex-col h-full`}>
-                    <div className={`flex items-center text-base font-bold mb-3 ${titleColor} border-b ${headerBorder} pb-2`}>
-                        <Icon icon={icon} size={18} className="mr-2"/> {title}
-                    </div>
+                    <div className={`flex items-center text-base font-bold mb-3 ${titleColor} border-b ${headerBorder} pb-2`}><Icon icon={icon} size={18} className="mr-2"/> {title}</div>
                     <div className="space-y-2 flex-1">
-                        {[
-                            { l: '到店數', k: 'Visits', fmt: null },
-                            { l: '成交數', k: 'Deals', fmt: null },
-                            { l: '成交率', k: 'DealRate', fmt: 'pct' },
-                            { l: '消費金額', k: 'Amount', fmt: 'money', big: true },
-                            { l: '平均客單', k: 'AvgTicket', fmt: 'money' }
-                        ].map((item, i) => (
+                        {[{ l: '到店數', k: 'Visits', fmt: null }, { l: '成交數', k: 'Deals', fmt: null }, { l: '成交率', k: 'DealRate', fmt: 'pct' }, { l: '消費金額', k: 'Amount', fmt: 'money', big: true }, { l: '平均客單', k: 'AvgTicket', fmt: 'money' }].map((item, i) => (
                             <div key={i} className="flex justify-between items-center">
                                 <span className="text-xs font-bold text-slate-500">{item.l}</span>
-                                <div className="flex items-center">
-                                    <span className={`font-bold ${item.big ? 'text-lg' : 'text-sm'} ${valueColor}`}>
-                                        {item.fmt === 'money' ? formatMoney(stats[prefix + item.k]) : 
-                                         item.fmt === 'pct' ? formatPercent(stats[prefix + item.k]) : 
-                                         stats[prefix + item.k]}
-                                    </span>
-                                    {/* Show rank if available for this metric */}
-                                    {ranks && ranks[prefix + item.k] && <RankIcon rank={ranks[prefix + item.k]} />}
-                                </div>
+                                <div className="flex items-center"><span className={`font-bold ${item.big ? 'text-lg' : 'text-sm'} ${valueColor}`}>{item.fmt === 'money' ? formatMoney(stats[prefix + item.k]) : item.fmt === 'pct' ? formatPercent(stats[prefix + item.k]) : stats[prefix + item.k]}</span>{ranks && ranks[prefix + item.k] && <RankIcon rank={ranks[prefix + item.k]} />}</div>
                             </div>
                         ))}
                     </div>
                 </div>
             );
         };
-
         const StaffInfoRow = ({ label, value, isMoney, isPercent, highlightClass, rank, globalRank }) => (
             <div className="info-row">
                 <span className="info-label">{label}</span>
-                <div className="info-val-container">
-                    <span className={`info-val ${highlightClass || 'text-slate-700'}`}>
-                        {isPercent ? formatPercent(value) : (isMoney ? formatMoney(value) : value)}
-                    </span>
-                    {globalRank ? <GlobalSalesRankIcon rank={globalRank} /> : <RankIcon rank={rank} />}
-                </div>
+                <div className="info-val-container"><span className={`info-val ${highlightClass || 'text-slate-700'}`}>{isPercent ? formatPercent(value) : (isMoney ? formatMoney(value) : value)}</span>{globalRank ? <GlobalSalesRankIcon rank={globalRank} /> : <RankIcon rank={rank} />}</div>
             </div>
         );
-
         const StaffCard = ({ staff, globalSalesRank, showBranch }) => {
             const { stats, ranks } = staff;
             return (
@@ -730,72 +465,30 @@
                         <span className="seniority-badge shadow-sm"><Icon icon="Clock" size={12} className="mr-1 text-slate-400" />{staff.seniority}</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                        <div className="bg-gray-50/50 p-3 rounded-lg border border-gray-100">
-                            <div className="staff-section-title text-medical-600 border-medical-100">銷售狀況</div>
-                            <div className="pl-1">
-                                <StaffInfoRow 
-                                    label="總銷售業績" 
-                                    value={stats.totalSales || stats.monthlySales} 
-                                    isMoney 
-                                    highlightClass="text-medical-700 text-lg" 
-                                    globalRank={globalSalesRank}
-                                />
-                                <StaffInfoRow label="年度銷售業績" value={stats.monthlySales} isMoney />
-                                <StaffInfoRow label="保養品業績" value={stats.productSales} isMoney />
-                                <StaffInfoRow label="年度開卡業績" value={stats.cardSales} isMoney />
-                                <StaffInfoRow label="年度開卡比率" value={stats.cardRate} isPercent rank={ranks?.cardRate} />
-                            </div>
-                        </div>
-                        <div className="bg-gray-50/50 p-3 rounded-lg border border-gray-100">
-                            <div className="staff-section-title text-slate-500 border-slate-200">顧客到店</div>
-                            <div className="pl-1">
-                                <StaffInfoRow label="到店來客數" value={stats.totalVisits} />
-                                <StaffInfoRow label="到店消費人數" value={stats.payingCustomers} />
-                                <StaffInfoRow label="平均成交率" value={stats.dealRate} isPercent highlightClass="text-medical-700" rank={ranks?.dealRate}/>
-                                <StaffInfoRow label="總平均客單" value={stats.avgTicket} isMoney highlightClass="text-medical-700" rank={ranks?.avgTicket}/>
-                            </div>
-                        </div>
-                        <div className="bg-orange-50/40 rounded-lg p-3 border border-orange-100">
-                            <div className="flex items-center mb-2 font-bold text-orange-700 text-sm border-b border-orange-200 pb-1"><Icon icon="UserPlus" size={14} className="mr-1.5"/> 新客表現</div>
-                            <StaffInfoRow label="到店新客數" value={stats.newVisits} />
-                            <StaffInfoRow label="新客成交數" value={stats.newDeals} />
-                            <StaffInfoRow label="新客成交率" value={stats.newDealRate} isPercent rank={ranks?.newDealRate}/>
-                            <StaffInfoRow label="新客消費金額" value={stats.newAmount} isMoney highlightClass="text-orange-800"/>
-                            <StaffInfoRow label="新客平均客單" value={stats.newAvgTicket} isMoney highlightClass="text-orange-800" rank={ranks?.newAvgTicket}/>
-                        </div>
-                         <div className="bg-blue-50/40 rounded-lg p-3 border border-blue-100">
-                            <div className="flex items-center mb-2 font-bold text-blue-700 text-sm border-b border-blue-200 pb-1"><Icon icon="Users" size={14} className="mr-1.5"/> 舊客表現</div>
-                            <StaffInfoRow label="到店舊客數" value={stats.oldVisits} />
-                            <StaffInfoRow label="舊客成交數" value={stats.oldDeals} />
-                            <StaffInfoRow label="舊客成交率" value={stats.oldDealRate} isPercent rank={ranks?.oldDealRate}/>
-                            <StaffInfoRow label="舊客消費金額" value={stats.oldAmount} isMoney highlightClass="text-blue-800"/>
-                            <StaffInfoRow label="舊客平均客單" value={stats.oldAvgTicket} isMoney highlightClass="text-blue-800" rank={ranks?.oldAvgTicket}/>
-                        </div>
+                        <div className="bg-gray-50/50 p-3 rounded-lg border border-gray-100"><div className="staff-section-title text-medical-600 border-medical-100">銷售狀況</div><div className="pl-1"><StaffInfoRow label="總銷售業績" value={stats.totalSales || stats.monthlySales} isMoney highlightClass="text-medical-700 text-lg" globalRank={globalSalesRank}/><StaffInfoRow label="年度銷售業績" value={stats.monthlySales} isMoney /><StaffInfoRow label="保養品業績" value={stats.productSales} isMoney /><StaffInfoRow label="年度開卡業績" value={stats.cardSales} isMoney /><StaffInfoRow label="年度開卡比率" value={stats.cardRate} isPercent rank={ranks?.cardRate} /></div></div>
+                        <div className="bg-gray-50/50 p-3 rounded-lg border border-gray-100"><div className="staff-section-title text-slate-500 border-slate-200">顧客到店</div><div className="pl-1"><StaffInfoRow label="到店來客數" value={stats.totalVisits} /><StaffInfoRow label="到店消費人數" value={stats.payingCustomers} /><StaffInfoRow label="平均成交率" value={stats.dealRate} isPercent highlightClass="text-medical-700" rank={ranks?.dealRate}/><StaffInfoRow label="總平均客單" value={stats.avgTicket} isMoney highlightClass="text-medical-700" rank={ranks?.avgTicket}/></div></div>
+                        <div className="bg-orange-50/40 rounded-lg p-3 border border-orange-100"><div className="flex items-center mb-2 font-bold text-orange-700 text-sm border-b border-orange-200 pb-1"><Icon icon="UserPlus" size={14} className="mr-1.5"/> 新客表現</div><StaffInfoRow label="到店新客數" value={stats.newVisits} /><StaffInfoRow label="新客成交數" value={stats.newDeals} /><StaffInfoRow label="新客成交率" value={stats.newDealRate} isPercent rank={ranks?.newDealRate}/><StaffInfoRow label="新客消費金額" value={stats.newAmount} isMoney highlightClass="text-orange-800"/><StaffInfoRow label="新客平均客單" value={stats.newAvgTicket} isMoney highlightClass="text-orange-800" rank={ranks?.newAvgTicket}/></div>
+                        <div className="bg-blue-50/40 rounded-lg p-3 border border-blue-100"><div className="flex items-center mb-2 font-bold text-blue-700 text-sm border-b border-blue-200 pb-1"><Icon icon="Users" size={14} className="mr-1.5"/> 舊客表現</div><StaffInfoRow label="到店舊客數" value={stats.oldVisits} /><StaffInfoRow label="舊客成交數" value={stats.oldDeals} /><StaffInfoRow label="舊客成交率" value={stats.oldDealRate} isPercent rank={ranks?.oldDealRate}/><StaffInfoRow label="舊客消費金額" value={stats.oldAmount} isMoney highlightClass="text-blue-800"/><StaffInfoRow label="舊客平均客單" value={stats.oldAvgTicket} isMoney highlightClass="text-blue-800" rank={ranks?.oldAvgTicket}/></div>
                     </div>
-                    <div className="bg-slate-50 rounded p-3 flex flex-wrap justify-between items-center border border-slate-200 mt-2">
-                        <div className="flex items-center text-xs font-bold text-slate-500 ml-2"><Icon icon="TrendingDown" size={16} className="mr-2"/> 課程消耗</div>
-                        <div className="flex space-x-6 mr-4">
-                            <div className="flex items-baseline"><span className="text-xs text-slate-400 mr-2">年度金額</span><span className="text-sm font-black text-slate-800">{formatMoney(stats.consumeAmount)}</span></div>
-                            <div className="flex items-baseline"><span className="text-xs text-slate-400 mr-2">人數</span><span className="text-sm font-bold text-slate-800">{stats.consumePeople || 0}</span></div>
-                            <div className="flex items-baseline"><span className="text-xs text-slate-400 mr-2">平均</span><span className="text-sm font-bold text-slate-800">{formatMoney(stats.consumeAvg)}</span></div>
-                        </div>
-                    </div>
+                    <div className="bg-slate-50 rounded p-3 flex flex-wrap justify-between items-center border border-slate-200 mt-2"><div className="flex items-center text-xs font-bold text-slate-500 ml-2"><Icon icon="TrendingDown" size={16} className="mr-2"/> 課程消耗</div><div className="flex space-x-6 mr-4"><div className="flex items-baseline"><span className="text-xs text-slate-400 mr-2">年度金額</span><span className="text-sm font-black text-slate-800">{formatMoney(stats.consumeAmount)}</span></div><div className="flex items-baseline"><span className="text-xs text-slate-400 mr-2">人數</span><span className="text-sm font-bold text-slate-800">{stats.consumePeople || 0}</span></div><div className="flex items-baseline"><span className="text-xs text-slate-400 mr-2">平均</span><span className="text-sm font-bold text-slate-800">{formatMoney(stats.consumeAvg)}</span></div></div></div>
                 </div>
             );
         };
 
         const App = () => {
+            // Initial State: Use Mock Data immediately
             const [parsedData, setParsedData] = useState(null);
             const [availablePeriods, setAvailablePeriods] = useState(["範例月份"]);
             const [selectedPeriod, setSelectedPeriod] = useState("範例月份");
             const [activeBranchIndex, setActiveBranchIndex] = useState(0);
-            const [logoUrl, setLogoUrl] = useState("logo.png");
+            const [logoUrl, setLogoUrl] = useState("./logo.png");
             const [user, setUser] = useState(null);
             const [isSaving, setIsSaving] = useState(false);
             const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
             const [passwordInput, setPasswordInput] = useState("");
             const [passwordError, setPasswordError] = useState(false);
             const [lastUpdated, setLastUpdated] = useState("");
+            const [authError, setAuthError] = useState(null);
 
             // Filters
             const [availableRoles, setAvailableRoles] = useState([]);
@@ -815,12 +508,21 @@
             const fileInputRef = useRef(null);
             const dashboardRef = useRef(null);
             
-            // Firebase
+            // Firebase Init
             useEffect(() => {
                 if (window.auth) {
                     const initAuth = async () => {
-                        if (window.__initial_auth_token) await window.signInWithCustomToken(window.auth, window.__initial_auth_token);
-                        else await window.signInAnonymously(window.auth);
+                        try {
+                            if (window.__initial_auth_token) await window.signInWithCustomToken(window.auth, window.__initial_auth_token);
+                            else await window.signInAnonymously(window.auth);
+                        } catch (error) {
+                            console.error("Auth error", error);
+                            if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
+                                setAuthError("請前往 Firebase Console > Authentication > Sign-in method 啟用「匿名 (Anonymous)」登入功能。");
+                            } else {
+                                setAuthError("連線錯誤：" + error.message);
+                            }
+                        }
                     };
                     initAuth();
                     window.onAuthStateChanged(window.auth, (u) => setUser(u));
@@ -840,6 +542,11 @@
                                 if (!data.periods.includes(selectedPeriod)) setSelectedPeriod(data.periods[data.periods.length - 1]);
                             }
                         }
+                    }, (error) => {
+                         console.error("Snapshot error:", error);
+                         if (error.code === 'permission-denied') {
+                             setAuthError("權限不足：請確認 Firestore Rules 是否允許讀寫。");
+                         }
                     });
                     return () => unsubscribe();
                 }
@@ -907,8 +614,15 @@
                     return { ...branch, staff: staffFinal, isGlobalRanking: false, isTotalOverview: false };
                 });
 
-                // Total Overview (Updated Rounding)
-                const totalStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
+                // --- TOTAL OVERVIEW TAB (Updated Rounding) ---
+                const totalStats = {
+                    monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0,
+                    totalVisits: 0, payingCustomers: 0,
+                    newVisits: 0, newDeals: 0, newAmount: 0,
+                    oldVisits: 0, oldDeals: 0, oldAmount: 0,
+                    consumeAmount: 0, consumePeople: 0
+                };
+                
                 branchList.forEach(b => {
                     const s = b.stats;
                     totalStats.monthlyGoal += s.monthlyGoal || 0;
@@ -929,14 +643,18 @@
                 const totalDerived = {
                     ...totalStats,
                     achievedRate: totalStats.monthlyGoal ? (totalStats.monthlyAchieved / totalStats.monthlyGoal) * 100 : 0,
-                    // ROUNDING
+                    
+                    // ROUNDING APPLIED HERE
                     cardRate: totalStats.monthlyAchieved ? Math.round((totalStats.cardSales / totalStats.monthlyAchieved) * 100) : 0,
                     dealRate: totalStats.totalVisits ? Math.round((totalStats.payingCustomers / totalStats.totalVisits) * 100) : 0,
                     avgTicket: totalStats.payingCustomers ? Math.round(totalStats.monthlyAchieved / totalStats.payingCustomers) : 0,
+                    
                     newDealRate: totalStats.newVisits ? Math.round((totalStats.newDeals / totalStats.newVisits) * 100) : 0,
                     newAvgTicket: totalStats.newDeals ? Math.round(totalStats.newAmount / totalStats.newDeals) : 0,
+                    
                     oldDealRate: totalStats.oldVisits ? Math.round((totalStats.oldDeals / totalStats.oldVisits) * 100) : 0,
                     oldAvgTicket: totalStats.oldDeals ? Math.round(totalStats.oldAmount / totalStats.oldDeals) : 0,
+                    
                     consumeAvg: totalStats.consumePeople ? Math.round(totalStats.consumeAmount / totalStats.consumePeople) : 0
                 };
                 
@@ -948,9 +666,11 @@
                     const branchMatch = selectedFilterBranches.includes(s.branchName);
                     const currentRank = globalSalesRankMap[`${s.name}_${s.branchName}`];
                     let rankMatch = rankRange === 'all' ? true : currentRank <= parseInt(rankRange);
+
                     let seniorityMatch = false;
-                    if (selectedSeniorityRanges.length === 0 || selectedSeniorityRanges.length === SENIORITY_RANGES.length) seniorityMatch = true;
-                    else {
+                    if (selectedSeniorityRanges.length === 0 || selectedSeniorityRanges.length === SENIORITY_RANGES.length) {
+                        seniorityMatch = true;
+                    } else {
                         const y = s.seniorityYears || 0;
                         seniorityMatch = selectedSeniorityRanges.some(rangeId => {
                             const range = SENIORITY_RANGES.find(r => r.id === rangeId);
@@ -958,6 +678,7 @@
                             return y >= range.min && y < range.max;
                         });
                     }
+
                     return roleMatch && branchMatch && rankMatch && seniorityMatch;
                 });
                 
@@ -982,6 +703,22 @@
             }, [parsedData, selectedPeriod, selectedRoles, selectedFilterBranches, rankRange, selectedSeniorityRanges]);
 
             const activeBranch = activeData[activeBranchIndex] || activeData[0];
+
+            // Render Error State
+            if (authError) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col p-8">
+                        <div className="text-red-500 mb-4"><Icon icon="AlertTriangle" size={64} /></div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">系統連線設定錯誤</h2>
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-lg text-left">
+                            <p className="text-red-700 font-bold mb-2">請管理員協助檢查：</p>
+                            <p className="text-red-600 text-sm">{authError}</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (!activeBranch) return <div className="p-10 text-center">資料載入中...</div>;
 
             // Handlers...
             const handleImportClick = () => { setIsPasswordModalOpen(true); setPasswordInput(""); setPasswordError(false); };
@@ -1014,8 +751,12 @@
                                     alert("資料已同步至雲端！");
                                 } catch (err) { console.error(err); alert("雲端同步失敗"); } finally { setIsSaving(false); }
                             }
-                        } else { throw new Error("格式讀取失敗"); }
-                    } catch (err) { alert("讀取錯誤: " + err.message); }
+                        } else {
+                            throw new Error("格式讀取失敗");
+                        }
+                    } catch (err) {
+                        alert("讀取錯誤: " + err.message);
+                    }
                 };
                 reader.readAsBinaryString(file);
             };
@@ -1028,6 +769,7 @@
                     link.click();
                 }
             };
+            // Toggles
             const toggleRole = (role) => { if (selectedRoles.includes(role)) setSelectedRoles(selectedRoles.filter(r => r !== role)); else setSelectedRoles([...selectedRoles, role]); };
             const toggleAllRoles = () => { if (selectedRoles.length === availableRoles.length) setSelectedRoles([]); else setSelectedRoles(availableRoles); };
             const toggleBranch = (branch) => { if (selectedFilterBranches.includes(branch)) setSelectedFilterBranches(selectedFilterBranches.filter(b => b !== branch)); else setSelectedFilterBranches([...selectedFilterBranches, branch]); };
@@ -1035,16 +777,14 @@
             const toggleSeniority = (rangeId) => { if (selectedSeniorityRanges.includes(rangeId)) setSelectedSeniorityRanges(selectedSeniorityRanges.filter(r => r !== rangeId)); else setSelectedSeniorityRanges([...selectedSeniorityRanges, rangeId]); };
             const toggleAllSeniority = () => { if (selectedSeniorityRanges.length === SENIORITY_RANGES.length) setSelectedSeniorityRanges([]); else setSelectedSeniorityRanges(SENIORITY_RANGES.map(r => r.id)); };
 
-            if (!activeBranch) return <div className="p-10 text-center">資料載入中...</div>;
-
             return (
                 <div className="min-h-screen pb-10 font-sans text-slate-800">
                     <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-                        <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-                            <div className="flex items-center space-x-3">
-                                <img src={logoUrl} alt="Logo" className="logo-img h-10 w-auto" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                        <div className="container mx-auto px-4 h-24 flex justify-between items-center">
+                            <div className="flex items-center space-x-4">
+                                <img src={logoUrl} alt="Logo" className="logo-img h-20 w-auto" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
                                 <div className="bg-medical-600 text-white p-1.5 rounded-lg shadow-sm" style={{display: 'none'}}><Icon icon="Activity" size={24} /></div>
-                                <h1 className="text-xl font-black tracking-tight text-slate-800 hidden md:block">營運年度績效</h1>
+                                <h1 className="text-3xl font-black tracking-tight text-slate-800 hidden md:block">營運年度績效</h1>
                                 {lastUpdated && <span className="text-xs text-slate-400 ml-2 pt-1 font-bold">最後更新: {lastUpdated}</span>}
                                 <div className="hidden lg:flex items-center ml-4 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
                                     {isSaving ? <><span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse mr-2"></span> 上傳中...</> : user ? <><span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span> 雲端已連線</> : <><span className="w-2 h-2 rounded-full bg-gray-400 mr-2"></span> 離線模式</>}
