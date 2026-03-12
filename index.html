@@ -31,7 +31,6 @@
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
-        // 使用您的設定
         const firebaseConfig = {
             apiKey: "AIzaSyDZkZCIk5UWBd-UnHmMCXr1BqTYZPZCkgA",
             authDomain: "megaia-medical-dashboard.firebaseapp.com",
@@ -45,7 +44,6 @@
         try {
             const app = initializeApp(firebaseConfig);
             
-            // Expose Firebase to window for React to use
             window.auth = getAuth(app);
             window.db = getFirestore(app);
             window.signInAnonymously = signInAnonymously;
@@ -57,11 +55,9 @@
             window.collection = collection;
             window.onSnapshot = onSnapshot;
             
-            // App ID for data separation
             window.appId = 'megaia-production'; 
             window.__initial_auth_token = undefined;
             
-            console.log("Firebase initialized successfully.");
         } catch (e) {
             console.error("Firebase init failed:", e);
         }
@@ -130,7 +126,6 @@
             return <span dangerouslySetInnerHTML={{ __html: svgHtml }} className="flex items-center justify-center" />;
         };
 
-        // --- CONSTANTS ---
         const SENIORITY_RANGES = [
             { id: '0-1', label: '1年以下 (新人)', min: 0, max: 1 },
             { id: '1-2', label: '1-2年', min: 1, max: 2 },
@@ -154,7 +149,6 @@
             'cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'
         ];
 
-        // --- Helpers ---
         const cleanNumber = (val) => {
             if (typeof val === 'number') return val;
             if (!val) return 0;
@@ -176,7 +170,6 @@
              return parseFloat(num).toFixed(1).replace(/\.0$/, '') + '%';
         }
 
-        // --- SENIORITY CALCULATION ---
         const calculateSeniorityInfo = (val) => {
             if (!val) return { text: "未知", years: 0 };
             const today = new Date('2026-02-11');
@@ -186,16 +179,11 @@
             if (dateMatch) {
                 date = new Date(parseInt(dateMatch[1]), parseInt(dateMatch[2]) - 1, parseInt(dateMatch[3]));
             } else if (!isNaN(parseFloat(val)) && isFinite(val)) {
-                if (parseFloat(val) > 20000) {
-                     const serial = parseFloat(val);
-                     date = new Date(Math.round((serial - 25569) * 86400 * 1000));
-                }
+                if (parseFloat(val) > 20000) date = new Date(Math.round((parseFloat(val) - 25569) * 86400 * 1000));
             } else {
                 date = new Date(strVal);
             }
-
             if (!date || isNaN(date.getTime())) return { text: "未知", years: 0 };
-
             let months = (today.getFullYear() - date.getFullYear()) * 12 + (today.getMonth() - date.getMonth());
             if (today.getDate() < date.getDate()) months--;
             if (months < 0) return { text: "未到職", years: 0 };
@@ -205,7 +193,6 @@
             return { text: text, years: months / 12 };
         };
 
-        // --- RANKING LOGIC ---
         const calculateRankings = (items, bottomThreshold = 3) => {
             if (!items || items.length === 0) return items;
             const rankedItems = items.map(item => ({ ...item, ranks: {} }));
@@ -248,38 +235,127 @@
             return top10Map;
         };
 
+        // --- MOCK DATA GENERATOR ---
+        const generateMockData = () => {
+            const branches = ["台北旗艦店", "台中向上店", "高雄巨蛋店"];
+            const roles = ["店長", "諮詢主任", "諮詢師", "醫美師"];
+            const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            
+            const staffList = [];
+            let globalId = 1;
+            
+            branches.forEach(b => {
+                for(let i=0; i<8; i++) {
+                    const joinYear = 2026 - r(0, 10);
+                    const senInfo = calculateSeniorityInfo(`${joinYear}/${r(1,12)}/01`);
+                    staffList.push({
+                        name: `模擬人員${globalId++}`,
+                        role: roles[i % roles.length],
+                        branch: b,
+                        seniority: senInfo.text,
+                        seniorityYears: senInfo.years,
+                        stats: {
+                            totalSales: r(500000, 5000000), monthlySales: r(100000, 1000000), productSales: r(10000, 200000),
+                            cardSales: r(50000, 500000), cardRate: r(10, 80), totalVisits: r(50, 200), payingCustomers: r(40, 180),
+                            dealRate: r(30, 90), avgTicket: r(3000, 20000), newVisits: r(10, 50), newDeals: r(5, 40),
+                            newDealRate: r(20, 80), newAmount: r(50000, 500000), newAvgTicket: r(5000, 30000),
+                            oldVisits: r(40, 150), oldDeals: r(35, 140), oldDealRate: r(50, 95), oldAmount: r(100000, 1000000),
+                            oldAvgTicket: r(2000, 15000), consumeAmount: r(200000, 2000000), consumePeople: r(50, 200), consumeAvg: r(2000, 10000)
+                        },
+                        ranks: {}
+                    });
+                }
+            });
+
+            const branchData = { branches: {}, branchOrder: branches };
+            const demoPeriods = ["1月", "2月", "3月", "第一季", "2026年度"];
+            
+            branches.forEach(b => {
+                branchData.branches[b] = {};
+                demoPeriods.forEach(p => {
+                    let mult = p.includes('季') ? 3 : (p.includes('年度') ? 12 : 1);
+                    branchData.branches[b][p] = {
+                        monthlyGoal: 10000000 * mult,
+                        monthlyAchieved: r(8000000, 15000000) * mult,
+                        cardSales: r(1000000, 5000000) * mult, cardRate: r(20, 60),
+                        totalVisits: r(500, 1000) * mult, payingCustomers: r(400, 900) * mult,
+                        dealRate: r(40, 80), avgTicket: r(5000, 25000),
+                        newVisits: r(100, 300) * mult, newDeals: r(50, 200) * mult,
+                        newDealRate: r(30, 70), newAmount: r(1000000, 3000000) * mult, newAvgTicket: r(8000, 30000),
+                        oldVisits: r(400, 800) * mult, oldDeals: r(350, 750) * mult,
+                        oldDealRate: r(60, 95), oldAmount: r(5000000, 10000000) * mult, oldAvgTicket: r(4000, 20000),
+                        consumeAmount: r(4000000, 8000000) * mult, consumePeople: r(300, 600) * mult, consumeAvg: r(5000, 15000),
+                        achievedRate: 0 
+                    };
+                    const s = branchData.branches[b][p];
+                    s.achievedRate = (s.monthlyAchieved / s.monthlyGoal) * 100;
+                });
+            });
+
+            return { branchData: branchData, staffData: staffList, periods: demoPeriods, lastUpdated: "預設本地模擬資料" };
+        };
+
         // --- EXCEL PARSING LOGIC ---
         const parseBranchSheet = (sheet) => {
             const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
             if (!data || data.length < 3) return null;
             let headerIdx = -1;
+            
             for(let i=0; i<Math.min(data.length, 20); i++) {
-                if(JSON.stringify(data[i]).includes("202") || JSON.stringify(data[i]).includes("年度")) {
+                const rowStr = JSON.stringify(data[i] || []);
+                // 新增對 YYYYMM 格式的辨識 (例如 202601)
+                if(rowStr.includes("202") || rowStr.includes("年度") || rowStr.match(/\d+月/) || rowStr.includes("季") || rowStr.includes("月目標")) {
                     headerIdx = i;
                     break;
                 }
             }
             if(headerIdx === -1) headerIdx = 1;
+            
             const headerRow = data[headerIdx]; 
             const periods = [];
             const periodIndices = {};
+            const rawPeriodMap = {}; // 記錄原始名稱對應的顯示名稱
+            
             if(headerRow && Array.isArray(headerRow)) {
                 headerRow.forEach((cell, idx) => {
-                    if (cell && (String(cell).includes('202') || String(cell).includes('年度'))) {
-                        const pName = String(cell).trim();
-                        if (!periodIndices.hasOwnProperty(pName)) {
-                            periods.push(pName);
-                            periodIndices[pName] = idx;
+                    if (cell !== undefined && cell !== null && cell !== "") {
+                        let rawName = String(cell).trim();
+                        let pName = rawName;
+                        
+                        if (typeof cell === 'number' && cell > 40000) {
+                            const d = new Date(Math.round((cell - 25569) * 86400 * 1000));
+                            pName = d.getFullYear() + "年" + (d.getMonth() + 1) + "月";
+                        } 
+                        // 處理 YYYYMM 格式 (例如 202601)
+                        else if (/^20\d{4}$/.test(rawName)) {
+                             const monthStr = rawName.substring(4, 6);
+                             pName = parseInt(monthStr, 10) + "月";
+                        }
+                        else if (/^(0?[1-9]|1[0-2])$/.test(rawName)) {
+                            pName = parseInt(rawName, 10) + "月";
+                        }
+
+                        // 判斷是否為有效時間段
+                        const isTime = pName.includes('年') || pName.includes('月') || pName.includes('季') || /^20\d{4}$/.test(rawName) || /^\d{4}[-/.]\d{1,2}$/.test(pName) || pName.includes('年度') || pName.includes('全年');
+
+                        if (isTime) {
+                            if (!periodIndices.hasOwnProperty(pName)) {
+                                periods.push(pName);
+                                periodIndices[pName] = idx;
+                                rawPeriodMap[rawName] = pName; // 記錄原始與解析後的對應
+                            }
                         }
                     }
                 });
             }
+            
             const branches = {};
             const branchOrder = []; 
             let currentBranch = null;
+            
             for (let i = headerIdx + 1; i < data.length; i++) {
                 const row = data[i];
-                if (!row) continue;
+                if (!row || !row.length) continue;
                 const colB = row[1]; 
                 if (colB) {
                     currentBranch = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
@@ -291,23 +367,85 @@
                 const metricName = row[2]; 
                 if (currentBranch && metricName && METRIC_MAP[metricName.trim()]) {
                     const key = METRIC_MAP[metricName.trim()];
-                    periods.forEach(p => {
-                        const idx = periodIndices[p];
+                    // 使用 periodIndices 來對應欄位
+                    Object.keys(periodIndices).forEach(pName => {
+                        const idx = periodIndices[pName];
                         const val = row[idx];
-                        if (!branches[currentBranch][p]) branches[currentBranch][p] = {};
+                        if (!branches[currentBranch][pName]) branches[currentBranch][pName] = {};
                         let numVal = cleanNumber(val);
-                        if ((key.includes('Rate') || key.includes('比率')) && Math.abs(numVal) <= 10.0 && numVal !== 0) numVal = numVal * 100;
-                        branches[currentBranch][p][key] = numVal;
+                        if ((key.includes('Rate') || key.includes('比率')) && Math.abs(numVal) <= 10.0 && numVal !== 0) {
+                            numVal = numVal * 100;
+                        }
+                        branches[currentBranch][pName][key] = numVal;
                     });
                 }
             }
+
+            let finalPeriods = [...periods];
+            const parseMonth = (p) => {
+                const match = String(p).match(/(\d+)月/);
+                if (match) return parseInt(match[1], 10);
+                return null;
+            };
+
             Object.keys(branches).forEach(b => {
-                Object.keys(branches[b]).forEach(p => {
-                    const stats = branches[b][p];
+                const bData = branches[b];
+                
+                Object.keys(bData).forEach(p => {
+                    const stats = bData[p];
                     if (stats.monthlyGoal && stats.monthlyAchieved) stats.achievedRate = (stats.monthlyAchieved / stats.monthlyGoal) * 100;
                 });
+
+                const quarters = { "第一季": [1, 2, 3], "第二季": [4, 5, 6], "第三季": [7, 8, 9], "第四季": [10, 11, 12] };
+
+                Object.keys(quarters).forEach(qName => {
+                    const targetMonths = quarters[qName];
+                    const monthsFound = periods.filter(p => targetMonths.includes(parseMonth(p)));
+                    
+                    if (monthsFound.length > 0 && !bData[qName]) {
+                        if (!finalPeriods.includes(qName)) {
+                            finalPeriods.push(qName);
+                        }
+                        
+                        const qStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
+                        
+                        monthsFound.forEach(m => {
+                            const s = bData[m];
+                            if(s) {
+                                qStats.monthlyGoal += (s.monthlyGoal || 0); qStats.monthlyAchieved += (s.monthlyAchieved || 0); qStats.cardSales += (s.cardSales || 0); qStats.totalVisits += (s.totalVisits || 0); qStats.payingCustomers += (s.payingCustomers || 0); qStats.newVisits += (s.newVisits || 0); qStats.newDeals += (s.newDeals || 0); qStats.newAmount += (s.newAmount || 0); qStats.oldVisits += (s.oldVisits || 0); qStats.oldDeals += (s.oldDeals || 0); qStats.oldAmount += (s.oldAmount || 0); qStats.consumeAmount += (s.consumeAmount || 0); qStats.consumePeople += (s.consumePeople || 0);
+                            }
+                        });
+
+                        qStats.achievedRate = qStats.monthlyGoal ? (qStats.monthlyAchieved / qStats.monthlyGoal) * 100 : 0;
+                        qStats.cardRate = qStats.monthlyAchieved ? Math.round((qStats.cardSales / qStats.monthlyAchieved) * 100) : 0;
+                        qStats.dealRate = qStats.totalVisits ? Math.round((qStats.payingCustomers / qStats.totalVisits) * 100) : 0;
+                        qStats.avgTicket = qStats.payingCustomers ? Math.round(qStats.monthlyAchieved / qStats.payingCustomers) : 0;
+                        qStats.newDealRate = qStats.newVisits ? Math.round((qStats.newDeals / qStats.newVisits) * 100) : 0;
+                        qStats.newAvgTicket = qStats.newDeals ? Math.round(qStats.newAmount / qStats.newDeals) : 0;
+                        qStats.oldDealRate = qStats.oldVisits ? Math.round((qStats.oldDeals / qStats.oldVisits) * 100) : 0;
+                        qStats.oldAvgTicket = qStats.oldDeals ? Math.round(qStats.oldAmount / qStats.oldDeals) : 0;
+                        qStats.consumeAvg = qStats.consumePeople ? Math.round(qStats.consumeAmount / qStats.consumePeople) : 0;
+
+                        bData[qName] = qStats;
+                    }
+                });
             });
-            return { branches, periods, branchOrder };
+
+            finalPeriods.sort((a, b) => {
+                const getWeight = (str) => {
+                    let w = 50000;
+                    if (str.includes('月')) return 10 + (parseMonth(str) || 0);
+                    if (str.includes('第一季')) return 100;
+                    if (str.includes('第二季')) return 101;
+                    if (str.includes('第三季')) return 102;
+                    if (str.includes('第四季')) return 103;
+                    if (str.includes('年度') || str.includes('全年')) return 1000;
+                    return 50;
+                };
+                return getWeight(a) - getWeight(b);
+            });
+
+            return { branches, periods: finalPeriods, branchOrder };
         };
 
         const parseStaffSheet = (sheet) => {
@@ -476,19 +614,20 @@
         };
 
         const App = () => {
-            // Initial State: Use Mock Data immediately
-            const [parsedData, setParsedData] = useState(null);
-            const [availablePeriods, setAvailablePeriods] = useState(["範例月份"]);
-            const [selectedPeriod, setSelectedPeriod] = useState("範例月份");
+            const initialMock = generateMockData();
+            const [parsedData, setParsedData] = useState(initialMock); 
+            const [availablePeriods, setAvailablePeriods] = useState(initialMock.periods);
+            const [selectedPeriod, setSelectedPeriod] = useState(initialMock.periods.includes("第一季") ? "第一季" : initialMock.periods[initialMock.periods.length - 1]);
             const [activeBranchIndex, setActiveBranchIndex] = useState(0);
-            const [logoUrl, setLogoUrl] = useState("./logo.png");
+            const [logoUrl, setLogoUrl] = useState("./logo.png"); 
             const [user, setUser] = useState(null);
             const [isSaving, setIsSaving] = useState(false);
             const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
             const [passwordInput, setPasswordInput] = useState("");
             const [passwordError, setPasswordError] = useState(false);
-            const [lastUpdated, setLastUpdated] = useState("");
-            const [authError, setAuthError] = useState(null);
+            const [lastUpdated, setLastUpdated] = useState(initialMock.lastUpdated);
+            
+            const [connectionStatus, setConnectionStatus] = useState("connecting"); 
 
             // Filters
             const [availableRoles, setAvailableRoles] = useState([]);
@@ -500,76 +639,78 @@
             const [isBranchFilterOpen, setIsBranchFilterOpen] = useState(false);
             
             const [rankRange, setRankRange] = useState('all');
-            
-            // NEW: Seniority Filters (Multi-select)
-            const [selectedSeniorityRanges, setSelectedSeniorityRanges] = useState([]); // Default empty = ALL
+            const [selectedSeniorityRanges, setSelectedSeniorityRanges] = useState([]); 
             const [isSeniorityFilterOpen, setIsSeniorityFilterOpen] = useState(false);
 
             const fileInputRef = useRef(null);
             const dashboardRef = useRef(null);
             
-            // Firebase Init
             useEffect(() => {
                 if (window.auth) {
                     const initAuth = async () => {
                         try {
-                            if (window.__initial_auth_token) await window.signInWithCustomToken(window.auth, window.__initial_auth_token);
-                            else await window.signInAnonymously(window.auth);
+                            await window.signInAnonymously(window.auth);
                         } catch (error) {
-                            console.error("Auth error", error);
-                            if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
-                                setAuthError("請前往 Firebase Console > Authentication > Sign-in method 啟用「匿名 (Anonymous)」登入功能。");
-                            } else {
-                                setAuthError("連線錯誤：" + error.message);
-                            }
+                            console.warn("Firebase 登入被阻擋", error);
                         }
                     };
                     initAuth();
-                    window.onAuthStateChanged(window.auth, (u) => setUser(u));
+                    const unsubscribe = window.onAuthStateChanged(window.auth, (u) => {
+                        setUser(u);
+                    });
+                    return () => unsubscribe();
+                } else {
+                    setConnectionStatus("offline");
                 }
             }, []);
 
             useEffect(() => {
-                if (user && window.db) {
+                if (window.db) {
                     const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'dashboard_save', 'main');
+                    
                     const unsubscribe = window.onSnapshot(docRef, (docSnap) => {
+                        setConnectionStatus("connected"); 
+                        
                         if (docSnap.exists()) {
                             const data = docSnap.data();
                             if (data.branchData && data.staffData) {
                                 setParsedData(data);
                                 setAvailablePeriods(data.periods);
                                 if (data.lastUpdated) setLastUpdated(data.lastUpdated);
-                                if (!data.periods.includes(selectedPeriod)) setSelectedPeriod(data.periods[data.periods.length - 1]);
+                                
+                                setSelectedPeriod(prev => {
+                                    if (!data.periods.includes(prev)) {
+                                        return data.periods.includes("第一季") ? "第一季" : data.periods[data.periods.length - 1];
+                                    }
+                                    return prev;
+                                });
                             }
                         }
                     }, (error) => {
-                         console.error("Snapshot error:", error);
-                         if (error.code === 'permission-denied') {
-                             setAuthError("權限不足：請確認 Firestore Rules 是否允許讀寫。");
-                         }
+                         console.warn("無法即時取得雲端資料。", error);
+                         setConnectionStatus("offline");
                     });
+                    
                     return () => unsubscribe();
                 }
-            }, [user]);
+            }, []); 
 
             useEffect(() => {
                 if (parsedData && parsedData.staffData) {
                     const roles = [...new Set(parsedData.staffData.map(s => s.role))].filter(Boolean);
                     setAvailableRoles(roles);
-                    if (selectedRoles.length === 0) setSelectedRoles(roles);
+                    setSelectedRoles(roles); 
                     
                     const branches = parsedData.branchData.branchOrder || Object.keys(parsedData.branchData.branches);
                     setAvailableBranches(branches);
-                    if (selectedFilterBranches.length === 0) setSelectedFilterBranches(branches);
+                    setSelectedFilterBranches(branches); 
                     
-                    if (selectedSeniorityRanges.length === 0) {
-                        setSelectedSeniorityRanges(SENIORITY_RANGES.map(r => r.id));
-                    }
+                    setSelectedSeniorityRanges(SENIORITY_RANGES.map(r => r.id)); 
                 }
             }, [parsedData]);
 
             const activeData = useMemo(() => {
-                if (!parsedData) return [{ branchName: "範例-台北旗艦店", stats: {}, staff: [], ranks: {} }];
+                if (!parsedData) return [{ branchName: "載入中...", stats: {}, staff: [], ranks: {} }];
 
                 const { branchData, staffData, periods } = parsedData;
                 const branchNames = branchData.branchOrder && branchData.branchOrder.length > 0 
@@ -604,7 +745,6 @@
 
                 const finalBranchTabs = rankedBranchList.map(branch => {
                     const myStaff = staffData.filter(s => s.branch === branch.branchName);
-                    // Local Staff Ranking: Bottom 3
                     const rankedStaff = calculateRankings(myStaff, 3);
                     
                     const staffFinal = rankedStaff.map(s => {
@@ -614,15 +754,8 @@
                     return { ...branch, staff: staffFinal, isGlobalRanking: false, isTotalOverview: false };
                 });
 
-                // --- TOTAL OVERVIEW TAB (Updated Rounding) ---
-                const totalStats = {
-                    monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0,
-                    totalVisits: 0, payingCustomers: 0,
-                    newVisits: 0, newDeals: 0, newAmount: 0,
-                    oldVisits: 0, oldDeals: 0, oldAmount: 0,
-                    consumeAmount: 0, consumePeople: 0
-                };
-                
+                // Total Overview 
+                const totalStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
                 branchList.forEach(b => {
                     const s = b.stats;
                     totalStats.monthlyGoal += s.monthlyGoal || 0;
@@ -643,18 +776,13 @@
                 const totalDerived = {
                     ...totalStats,
                     achievedRate: totalStats.monthlyGoal ? (totalStats.monthlyAchieved / totalStats.monthlyGoal) * 100 : 0,
-                    
-                    // ROUNDING APPLIED HERE
                     cardRate: totalStats.monthlyAchieved ? Math.round((totalStats.cardSales / totalStats.monthlyAchieved) * 100) : 0,
                     dealRate: totalStats.totalVisits ? Math.round((totalStats.payingCustomers / totalStats.totalVisits) * 100) : 0,
                     avgTicket: totalStats.payingCustomers ? Math.round(totalStats.monthlyAchieved / totalStats.payingCustomers) : 0,
-                    
                     newDealRate: totalStats.newVisits ? Math.round((totalStats.newDeals / totalStats.newVisits) * 100) : 0,
                     newAvgTicket: totalStats.newDeals ? Math.round(totalStats.newAmount / totalStats.newDeals) : 0,
-                    
                     oldDealRate: totalStats.oldVisits ? Math.round((totalStats.oldDeals / totalStats.oldVisits) * 100) : 0,
                     oldAvgTicket: totalStats.oldDeals ? Math.round(totalStats.oldAmount / totalStats.oldDeals) : 0,
-                    
                     consumeAvg: totalStats.consumePeople ? Math.round(totalStats.consumeAmount / totalStats.consumePeople) : 0
                 };
                 
@@ -662,8 +790,9 @@
 
                 // Global Ranking Tab
                 const filteredGlobalStaff = allStaffFlat.filter(s => {
-                    const roleMatch = selectedRoles.includes(s.role);
-                    const branchMatch = selectedFilterBranches.includes(s.branchName);
+                    const roleMatch = selectedRoles.length === 0 || selectedRoles.includes(s.role);
+                    const branchMatch = selectedFilterBranches.length === 0 || selectedFilterBranches.includes(s.branchName);
+                    
                     const currentRank = globalSalesRankMap[`${s.name}_${s.branchName}`];
                     let rankMatch = rankRange === 'all' ? true : currentRank <= parseInt(rankRange);
 
@@ -704,28 +833,16 @@
 
             const activeBranch = activeData[activeBranchIndex] || activeData[0];
 
-            // Render Error State
-            if (authError) {
-                return (
-                    <div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col p-8">
-                        <div className="text-red-500 mb-4"><Icon icon="AlertTriangle" size={64} /></div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">系統連線設定錯誤</h2>
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-lg text-left">
-                            <p className="text-red-700 font-bold mb-2">請管理員協助檢查：</p>
-                            <p className="text-red-600 text-sm">{authError}</p>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (!activeBranch) return <div className="p-10 text-center">資料載入中...</div>;
-
-            // Handlers...
             const handleImportClick = () => { setIsPasswordModalOpen(true); setPasswordInput(""); setPasswordError(false); };
-            const handlePasswordSubmit = (e) => { e.preventDefault(); if (passwordInput === "8888") { setIsPasswordModalOpen(false); if(fileInputRef.current) fileInputRef.current.click(); } else { setPasswordError(true); } };
+            const handlePasswordSubmit = (e) => {
+                e.preventDefault();
+                if (passwordInput === "8888") { setIsPasswordModalOpen(false); if(fileInputRef.current) fileInputRef.current.click(); } 
+                else { setPasswordError(true); }
+            };
             const handleFileUpload = (e) => { 
                 const file = e.target.files[0];
                 if (!file) return;
+
                 const reader = new FileReader();
                 reader.onload = async (evt) => {
                     try {
@@ -737,19 +854,31 @@
                         if (branchParsed && staffParsed) {
                             const nowStr = new Date().toLocaleString('zh-TW');
                             const newData = { branchData: branchParsed, staffData: staffParsed, periods: branchParsed.periods, lastUpdated: nowStr };
+                            
                             setParsedData(newData);
                             setAvailablePeriods(branchParsed.periods);
                             setLastUpdated(nowStr);
-                            setSelectedPeriod(branchParsed.periods[branchParsed.periods.length - 1]);
+                            
+                            const defaultP = branchParsed.periods.includes("第一季") ? "第一季" : branchParsed.periods[branchParsed.periods.length - 1];
+                            setSelectedPeriod(defaultP);
                             setActiveBranchIndex(0);
 
-                            if (user && window.db) {
+                            if (window.db) {
                                 setIsSaving(true);
                                 try {
                                     const docRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'dashboard_save', 'main');
                                     await window.setDoc(docRef, JSON.parse(JSON.stringify(newData)));
-                                    alert("資料已同步至雲端！");
-                                } catch (err) { console.error(err); alert("雲端同步失敗"); } finally { setIsSaving(false); }
+                                    alert("資料已成功匯入並同步至雲端！主管現在可查看。");
+                                    setConnectionStatus("connected"); 
+                                } catch (err) {
+                                    console.error(err);
+                                    alert("已成功匯入本機。但同步雲端失敗，請確認 Firebase Rules 允許寫入。");
+                                    setConnectionStatus("offline");
+                                } finally {
+                                    setIsSaving(false);
+                                }
+                            } else {
+                                alert("匯入成功 (離線模式)。");
                             }
                         } else {
                             throw new Error("格式讀取失敗");
@@ -769,7 +898,7 @@
                     link.click();
                 }
             };
-            // Toggles
+
             const toggleRole = (role) => { if (selectedRoles.includes(role)) setSelectedRoles(selectedRoles.filter(r => r !== role)); else setSelectedRoles([...selectedRoles, role]); };
             const toggleAllRoles = () => { if (selectedRoles.length === availableRoles.length) setSelectedRoles([]); else setSelectedRoles(availableRoles); };
             const toggleBranch = (branch) => { if (selectedFilterBranches.includes(branch)) setSelectedFilterBranches(selectedFilterBranches.filter(b => b !== branch)); else setSelectedFilterBranches([...selectedFilterBranches, branch]); };
@@ -779,7 +908,7 @@
 
             return (
                 <div className="min-h-screen pb-10 font-sans text-slate-800">
-                    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+                    <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
                         <div className="container mx-auto px-4 h-24 flex justify-between items-center">
                             <div className="flex items-center space-x-4">
                                 <img src={logoUrl} alt="Logo" className="logo-img h-20 w-auto" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
@@ -787,7 +916,15 @@
                                 <h1 className="text-3xl font-black tracking-tight text-slate-800 hidden md:block">營運年度績效</h1>
                                 {lastUpdated && <span className="text-xs text-slate-400 ml-2 pt-1 font-bold">最後更新: {lastUpdated}</span>}
                                 <div className="hidden lg:flex items-center ml-4 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
-                                    {isSaving ? <><span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse mr-2"></span> 上傳中...</> : user ? <><span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span> 雲端已連線</> : <><span className="w-2 h-2 rounded-full bg-gray-400 mr-2"></span> 離線模式</>}
+                                    {isSaving ? (
+                                        <><span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse mr-2"></span> 上傳中...</>
+                                    ) : connectionStatus === "connected" ? (
+                                        <><span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span> 雲端已連線</>
+                                    ) : connectionStatus === "offline" ? (
+                                        <><span className="w-2 h-2 rounded-full bg-gray-400 mr-2"></span> 僅本機資料</>
+                                    ) : (
+                                        <><span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse mr-2"></span> 正在建立連線...</>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex items-center space-x-3">
