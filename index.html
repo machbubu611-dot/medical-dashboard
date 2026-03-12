@@ -30,7 +30,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyDZkZCIk5UWBd-UnHmMCXr1BqTYZPZCkgA",
             authDomain: "megaia-medical-dashboard.firebaseapp.com",
@@ -43,7 +42,6 @@
 
         try {
             const app = initializeApp(firebaseConfig);
-            
             window.auth = getAuth(app);
             window.db = getFirestore(app);
             window.signInAnonymously = signInAnonymously;
@@ -54,10 +52,7 @@
             window.getDoc = getDoc;
             window.collection = collection;
             window.onSnapshot = onSnapshot;
-            
             window.appId = 'megaia-production'; 
-            window.__initial_auth_token = undefined;
-            
         } catch (e) {
             console.error("Firebase init failed:", e);
         }
@@ -145,9 +140,7 @@
             "總銷售業績": "totalSales", "當月銷售業績": "monthlySales", "保養/保健品銷售業績": "productSales"
         };
 
-        const RANK_METRICS = [
-            'cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'
-        ];
+        const RANK_METRICS = ['cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'];
 
         const cleanNumber = (val) => {
             if (typeof val === 'number') return val;
@@ -236,6 +229,7 @@
         };
 
         // --- MOCK DATA GENERATOR ---
+        // Brought back into scope here
         const generateMockData = () => {
             const branches = ["台北旗艦店", "台中向上店", "高雄巨蛋店"];
             const roles = ["店長", "諮詢主任", "諮詢師", "醫美師"];
@@ -268,7 +262,7 @@
             });
 
             const branchData = { branches: {}, branchOrder: branches };
-            const demoPeriods = ["1月", "2月", "3月", "第一季", "2026年度"];
+            const demoPeriods = ["1月", "2月", "3月", "第一季", "年度"];
             
             branches.forEach(b => {
                 branchData.branches[b] = {};
@@ -295,21 +289,33 @@
             return { branchData: branchData, staffData: staffList, periods: demoPeriods, lastUpdated: "預設本地模擬資料" };
         };
 
-        // --- EXCEL PARSING LOGIC ---
+
+        // ==========================================
+        // 核心修正區：強化 Excel 月份/季度辨識與加總
+        // ==========================================
         const parseBranchSheet = (sheet) => {
             const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
             if (!data || data.length < 3) return null;
+            
             let headerIdx = -1;
             
-            for(let i=0; i<Math.min(data.length, 20); i++) {
-                const rowStr = JSON.stringify(data[i] || []);
-                // 新增對 YYYYMM 格式的辨識 (例如 202601)
-                if(rowStr.includes("202") || rowStr.includes("年度") || rowStr.match(/\d+月/) || rowStr.includes("季") || rowStr.includes("月目標")) {
+            // 尋找真實的標題列：只找包含多個類似「202601」、「1月」或「目標」的行
+            for(let i=0; i<Math.min(data.length, 10); i++) {
+                let score = 0;
+                const row = data[i] || [];
+                row.forEach(cell => {
+                    const str = String(cell).trim();
+                    if (/^20\d{4}$/.test(str)) score += 2; // 202601
+                    if (/^\d+月$/.test(str)) score += 2; // 1月
+                    if (str.includes('月目標') || str.includes('營收') || str.includes('當月')) score += 1;
+                });
+                // 分數達標，認定為標題列
+                if (score >= 2) {
                     headerIdx = i;
                     break;
                 }
             }
-            if(headerIdx === -1) headerIdx = 1;
+            if(headerIdx === -1) headerIdx = 1; // 預設第二行
             
             const headerRow = data[headerIdx]; 
             const periods = [];
@@ -322,28 +328,42 @@
                         let rawName = String(cell).trim();
                         let pName = rawName;
                         
-                        if (typeof cell === 'number' && cell > 40000) {
+                        // 1. 安全處理 Excel 原生日期 (過濾掉500萬這種目標數字)
+                        if (typeof cell === 'number' && cell > 30000 && cell < 60000) {
                             const d = new Date(Math.round((cell - 25569) * 86400 * 1000));
-                            pName = d.getFullYear() + "年" + (d.getMonth() + 1) + "月";
+                            pName = (d.getMonth() + 1) + "月";
                         } 
-                        // 處理 YYYYMM 格式 (例如 202601)
-                        else if (/^20\d{4}$/.test(rawName)) {
-                             const monthStr = rawName.substring(4, 6);
-                             pName = parseInt(monthStr, 10) + "月";
+                        // 2. 處理 202601 -> 1月
+                        else if (/^20\d{4}$/.test(pName)) {
+                             pName = parseInt(pName.substring(4, 6), 10) + "月";
                         }
-                        else if (/^(0?[1-9]|1[0-2])$/.test(rawName)) {
-                            pName = parseInt(rawName, 10) + "月";
+                        // 3. 處理 2026/01, 2026-1 -> 1月
+                        else if (/^20\d{2}[-/.](0?[1-9]|1[0-2])$/.test(pName)) {
+                             const m = pName.match(/^20\d{2}[-/.](0?[1-9]|1[0-2])$/)[1];
+                             pName = parseInt(m, 10) + "月";
                         }
+                        // 4. 處理 01月, 1月 -> 1月
+                        else if (/^(0?[1-9]|1[0-2])\s*月$/.test(pName)) {
+                             const m = pName.match(/^(0?[1-9]|1[0-2])/)[1];
+                             pName = parseInt(m, 10) + "月";
+                        }
+                        // 5. 處理純數字 1, 02 -> 1月
+                        else if (/^(0?[1-9]|1[0-2])$/.test(pName)) {
+                            pName = parseInt(pName, 10) + "月";
+                        }
+                        // 6. 季度與年度
+                        if (pName.includes('第一季') || pName.includes('Q1')) pName = '第一季';
+                        if (pName.includes('第二季') || pName.includes('Q2')) pName = '第二季';
+                        if (pName.includes('第三季') || pName.includes('Q3')) pName = '第三季';
+                        if (pName.includes('第四季') || pName.includes('Q4')) pName = '第四季';
+                        if (pName.includes('年度') || pName.includes('全年')) pName = '年度';
 
-                        // 判斷是否為有效時間段
-                        const isTime = pName.includes('年') || pName.includes('月') || pName.includes('季') || /^20\d{4}$/.test(rawName) || /^\d{4}[-/.]\d{1,2}$/.test(pName) || pName.includes('年度') || pName.includes('全年');
+                        const isStandardPeriod = /^\d+月$/.test(pName) || pName.includes('季') || pName === '年度';
 
-                        if (isTime) {
-                            if (!periodIndices.hasOwnProperty(pName)) {
-                                periods.push(pName);
-                                periodIndices[pName] = idx;
-                                rawPeriodMap[rawName] = pName; // 記錄原始與解析後的對應
-                            }
+                        if (isStandardPeriod && !periodIndices.hasOwnProperty(pName)) {
+                            periods.push(pName);
+                            periodIndices[pName] = idx;
+                            rawPeriodMap[rawName] = pName;
                         }
                     }
                 });
@@ -356,18 +376,24 @@
             for (let i = headerIdx + 1; i < data.length; i++) {
                 const row = data[i];
                 if (!row || !row.length) continue;
+                
                 const colB = row[1]; 
-                if (colB) {
-                    currentBranch = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
-                    if (!branches[currentBranch]) {
-                        branches[currentBranch] = {};
-                        branchOrder.push(currentBranch);
+                // 處理分店名稱 (解決合併儲存格留白的問題)
+                if (colB !== undefined && colB !== null) {
+                    const bName = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
+                    if (bName !== "") {
+                        currentBranch = bName;
+                        if (!branches[currentBranch]) {
+                            branches[currentBranch] = {};
+                            branchOrder.push(currentBranch);
+                        }
                     }
                 }
+
                 const metricName = row[2]; 
                 if (currentBranch && metricName && METRIC_MAP[metricName.trim()]) {
                     const key = METRIC_MAP[metricName.trim()];
-                    // 使用 periodIndices 來對應欄位
+                    // 根據索引將數值存入對應標準化後的月份
                     Object.keys(periodIndices).forEach(pName => {
                         const idx = periodIndices[pName];
                         const val = row[idx];
@@ -382,40 +408,46 @@
             }
 
             let finalPeriods = [...periods];
-            const parseMonth = (p) => {
-                const match = String(p).match(/(\d+)月/);
-                if (match) return parseInt(match[1], 10);
-                return null;
-            };
 
+            // --- 自動計算季度與年度邏輯 ---
             Object.keys(branches).forEach(b => {
                 const bData = branches[b];
                 
+                // 計算單月達成率
                 Object.keys(bData).forEach(p => {
                     const stats = bData[p];
                     if (stats.monthlyGoal && stats.monthlyAchieved) stats.achievedRate = (stats.monthlyAchieved / stats.monthlyGoal) * 100;
                 });
 
-                const quarters = { "第一季": [1, 2, 3], "第二季": [4, 5, 6], "第三季": [7, 8, 9], "第四季": [10, 11, 12] };
+                const quarters = { 
+                    "第一季": ["1月", "2月", "3月"], 
+                    "第二季": ["4月", "5月", "6月"], 
+                    "第三季": ["7月", "8月", "9月"], 
+                    "第四季": ["10月", "11月", "12月"] 
+                };
 
+                // 計算第一到第四季
                 Object.keys(quarters).forEach(qName => {
                     const targetMonths = quarters[qName];
-                    const monthsFound = periods.filter(p => targetMonths.includes(parseMonth(p)));
+                    const availableMonths = targetMonths.filter(m => periods.includes(m) && bData[m]);
                     
-                    if (monthsFound.length > 0 && !bData[qName]) {
-                        if (!finalPeriods.includes(qName)) {
-                            finalPeriods.push(qName);
-                        }
+                    if (availableMonths.length > 0 && !bData[qName]) {
+                        if (!finalPeriods.includes(qName)) finalPeriods.push(qName);
                         
                         const qStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
                         
-                        monthsFound.forEach(m => {
+                        availableMonths.forEach(m => {
                             const s = bData[m];
-                            if(s) {
-                                qStats.monthlyGoal += (s.monthlyGoal || 0); qStats.monthlyAchieved += (s.monthlyAchieved || 0); qStats.cardSales += (s.cardSales || 0); qStats.totalVisits += (s.totalVisits || 0); qStats.payingCustomers += (s.payingCustomers || 0); qStats.newVisits += (s.newVisits || 0); qStats.newDeals += (s.newDeals || 0); qStats.newAmount += (s.newAmount || 0); qStats.oldVisits += (s.oldVisits || 0); qStats.oldDeals += (s.oldDeals || 0); qStats.oldAmount += (s.oldAmount || 0); qStats.consumeAmount += (s.consumeAmount || 0); qStats.consumePeople += (s.consumePeople || 0);
-                            }
+                            qStats.monthlyGoal += (s.monthlyGoal || 0); qStats.monthlyAchieved += (s.monthlyAchieved || 0); 
+                            qStats.cardSales += (s.cardSales || 0); qStats.totalVisits += (s.totalVisits || 0); 
+                            qStats.payingCustomers += (s.payingCustomers || 0); qStats.newVisits += (s.newVisits || 0); 
+                            qStats.newDeals += (s.newDeals || 0); qStats.newAmount += (s.newAmount || 0); 
+                            qStats.oldVisits += (s.oldVisits || 0); qStats.oldDeals += (s.oldDeals || 0); 
+                            qStats.oldAmount += (s.oldAmount || 0); qStats.consumeAmount += (s.consumeAmount || 0); 
+                            qStats.consumePeople += (s.consumePeople || 0);
                         });
 
+                        // 精準重新計算各項比率與平均
                         qStats.achievedRate = qStats.monthlyGoal ? (qStats.monthlyAchieved / qStats.monthlyGoal) * 100 : 0;
                         qStats.cardRate = qStats.monthlyAchieved ? Math.round((qStats.cardSales / qStats.monthlyAchieved) * 100) : 0;
                         qStats.dealRate = qStats.totalVisits ? Math.round((qStats.payingCustomers / qStats.totalVisits) * 100) : 0;
@@ -429,20 +461,44 @@
                         bData[qName] = qStats;
                     }
                 });
+
+                // 計算全年度
+                const allMonths = ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+                const availableAnnualMonths = allMonths.filter(m => periods.includes(m) && bData[m]);
+                
+                if (availableAnnualMonths.length > 0 && !bData["年度"]) {
+                    if (!finalPeriods.includes("年度")) finalPeriods.push("年度");
+                    
+                    const yStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
+                    availableAnnualMonths.forEach(m => {
+                        const s = bData[m];
+                        yStats.monthlyGoal += (s.monthlyGoal || 0); yStats.monthlyAchieved += (s.monthlyAchieved || 0); 
+                        yStats.cardSales += (s.cardSales || 0); yStats.totalVisits += (s.totalVisits || 0); 
+                        yStats.payingCustomers += (s.payingCustomers || 0); yStats.newVisits += (s.newVisits || 0); 
+                        yStats.newDeals += (s.newDeals || 0); yStats.newAmount += (s.newAmount || 0); 
+                        yStats.oldVisits += (s.oldVisits || 0); yStats.oldDeals += (s.oldDeals || 0); 
+                        yStats.oldAmount += (s.oldAmount || 0); yStats.consumeAmount += (s.consumeAmount || 0); 
+                        yStats.consumePeople += (s.consumePeople || 0);
+                    });
+
+                    yStats.achievedRate = yStats.monthlyGoal ? (yStats.monthlyAchieved / yStats.monthlyGoal) * 100 : 0;
+                    yStats.cardRate = yStats.monthlyAchieved ? Math.round((yStats.cardSales / yStats.monthlyAchieved) * 100) : 0;
+                    yStats.dealRate = yStats.totalVisits ? Math.round((yStats.payingCustomers / yStats.totalVisits) * 100) : 0;
+                    yStats.avgTicket = yStats.payingCustomers ? Math.round(yStats.monthlyAchieved / yStats.payingCustomers) : 0;
+                    yStats.newDealRate = yStats.newVisits ? Math.round((yStats.newDeals / yStats.newVisits) * 100) : 0;
+                    yStats.newAvgTicket = yStats.newDeals ? Math.round(yStats.newAmount / yStats.newDeals) : 0;
+                    yStats.oldDealRate = yStats.oldVisits ? Math.round((yStats.oldDeals / yStats.oldVisits) * 100) : 0;
+                    yStats.oldAvgTicket = yStats.oldDeals ? Math.round(yStats.oldAmount / yStats.oldDeals) : 0;
+                    yStats.consumeAvg = yStats.consumePeople ? Math.round(yStats.consumeAmount / yStats.consumePeople) : 0;
+
+                    bData["年度"] = yStats;
+                }
             });
 
+            // 完美排序時間選項
             finalPeriods.sort((a, b) => {
-                const getWeight = (str) => {
-                    let w = 50000;
-                    if (str.includes('月')) return 10 + (parseMonth(str) || 0);
-                    if (str.includes('第一季')) return 100;
-                    if (str.includes('第二季')) return 101;
-                    if (str.includes('第三季')) return 102;
-                    if (str.includes('第四季')) return 103;
-                    if (str.includes('年度') || str.includes('全年')) return 1000;
-                    return 50;
-                };
-                return getWeight(a) - getWeight(b);
+                const order = {"1月":1, "2月":2, "3月":3, "第一季":4, "4月":5, "5月":6, "6月":7, "第二季":8, "7月":9, "8月":10, "9月":11, "第三季":12, "10月":13, "11月":14, "12月":15, "第四季":16, "年度":99};
+                return (order[a] || 50) - (order[b] || 50);
             });
 
             return { branches, periods: finalPeriods, branchOrder };
