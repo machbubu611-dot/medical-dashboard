@@ -560,7 +560,7 @@
             }
             
             const branches = {};
-            let currentBranch = null; // 加回外層變數來記錄當前讀取的分店
+            let currentBranch = null; 
             
             for (let i = headerIdx + 1; i < data.length; i++) {
                 const row = data[i];
@@ -570,14 +570,13 @@
                 if (colB !== undefined && colB !== null) {
                     const bName = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
                     if (bName !== "") {
-                        currentBranch = bName; // 更新當前分店
+                        currentBranch = bName; 
                         if (!branches[currentBranch]) {
                             branches[currentBranch] = {};
                         }
                     }
                 }
 
-                // 【修復重點】將指標讀取移出 if (colB) 的判斷外，確保合併儲存格的留白列也能成功寫入
                 const metricName = row[2]; 
                 if (currentBranch && metricName && METRIC_MAP[metricName.trim()]) {
                     const key = METRIC_MAP[metricName.trim()];
@@ -686,13 +685,11 @@
             const PREDEFINED_BRANCHES = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
             const sortedBranchOrder = [];
             PREDEFINED_BRANCHES.forEach(target => {
-                // 尋找完全相等或是包含該名稱的分店 (例如: Excel 中可能是 "台北仁愛店")
                 const match = Object.keys(branches).find(b => b === target || b.includes(target));
                 if (match && !sortedBranchOrder.includes(match)) {
                     sortedBranchOrder.push(match);
                 }
             });
-            // 將不在預設清單中但存在於資料中的其他分店加到最後面，避免遺漏
             Object.keys(branches).forEach(b => {
                 if (!sortedBranchOrder.includes(b)) {
                     sortedBranchOrder.push(b);
@@ -911,18 +908,18 @@
             const displayPeriods = availablePeriods;
 
             return (
-                <div className="bg-white rounded-lg shadow-sm border border-slate-200 mb-8 overflow-hidden">
-                    <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 text-base font-black text-slate-700 flex items-center">
-                        <Icon icon="Table" className="mr-2 text-blue-600"/> 各店營收達成總表
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden">
+                    <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex items-center">
+                        <Icon icon="Table" className="mr-2 text-blue-600" size={22}/> 各店營收達成總表
                     </div>
                     <div className="overflow-x-auto scrollbar-hide">
-                        <table className="w-full text-sm text-left border-collapse min-w-[800px]">
+                        <table className="w-full text-base text-left border-collapse min-w-[1000px]">
                             <thead className="bg-slate-100 text-slate-600 border-b-2 border-slate-200">
                                 <tr>
-                                    <th className="px-4 py-3 font-extrabold whitespace-nowrap sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">分店</th>
-                                    <th className="px-4 py-3 font-extrabold whitespace-nowrap border-r border-slate-200 sticky left-[90px] md:left-[120px] bg-slate-100 z-20">項目</th>
+                                    <th className="px-5 py-4 font-extrabold whitespace-nowrap sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px]">分店</th>
+                                    <th className="px-5 py-4 font-extrabold whitespace-nowrap border-r border-slate-200 sticky left-[130px] md:left-[150px] bg-slate-100 z-20 text-lg">項目</th>
                                     {displayPeriods.map(p => (
-                                        <th key={p} className="px-4 py-3 font-extrabold whitespace-nowrap text-right min-w-[100px] border-r border-slate-200">{p}</th>
+                                        <th key={p} className="px-5 py-4 font-extrabold whitespace-nowrap text-right min-w-[130px] border-r border-slate-200 text-lg">{p}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -936,24 +933,24 @@
                                     return (
                                         <React.Fragment key={bName}>
                                             <tr className={trClass}>
-                                                <td rowSpan="3" className={`px-4 py-3 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] ${!isLast ? 'border-b-2' : ''}`}>{bName}</td>
-                                                <td className="px-4 py-2 font-bold text-slate-500 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[90px] md:left-[120px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">營收目標</td>
+                                                <td rowSpan="3" className={`px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px] ${!isLast ? 'border-b-2' : ''}`}>{bName}</td>
+                                                <td className="px-5 py-3 font-bold text-slate-500 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">營收目標</td>
                                                 {displayPeriods.map(p => (
-                                                    <td key={p} className="px-4 py-2 text-right text-slate-600 border-r border-slate-200">{formatMoney(getVal(p, 'monthlyGoal'))}</td>
+                                                    <td key={p} className="px-5 py-3 text-right text-slate-600 border-r border-slate-200 text-base">{formatMoney(getVal(p, 'monthlyGoal'))}</td>
                                                 ))}
                                             </tr>
                                             <tr className={trClass}>
-                                                <td className="px-4 py-2 font-bold text-medical-700 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[90px] md:left-[120px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">實際營收</td>
+                                                <td className="px-5 py-3 font-bold text-medical-700 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">實際營收</td>
                                                 {displayPeriods.map(p => (
-                                                    <td key={p} className="px-4 py-2 text-right font-bold text-medical-800 border-r border-slate-200 bg-medical-50/20">{formatMoney(getVal(p, 'monthlyAchieved'))}</td>
+                                                    <td key={p} className="px-5 py-3 text-right font-bold text-medical-800 border-r border-slate-200 bg-medical-50/20 text-lg">{formatMoney(getVal(p, 'monthlyAchieved'))}</td>
                                                 ))}
                                             </tr>
                                             <tr className={`${trClass} ${!isLast ? 'border-b-2 border-slate-200' : ''}`}>
-                                                <td className="px-4 py-2 font-bold text-orange-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[90px] md:left-[120px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">達成率</td>
+                                                <td className="px-5 py-3 font-bold text-orange-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">達成率</td>
                                                 {displayPeriods.map(p => {
                                                     const rate = getVal(p, 'achievedRate');
                                                     return (
-                                                        <td key={p} className={`px-4 py-2 text-right font-black border-r border-slate-200 ${rate >= 100 ? 'text-green-600' : 'text-orange-600'}`}>
+                                                        <td key={p} className={`px-5 py-3 text-right font-black border-r border-slate-200 text-lg ${rate >= 100 ? 'text-green-600' : 'text-orange-600'}`}>
                                                             {formatPercent(rate)}
                                                         </td>
                                                     );
