@@ -427,7 +427,8 @@
 
         // --- MOCK DATA GENERATOR ---
         const generateMockData = () => {
-            const branches = ["台北旗艦店", "台中向上店", "高雄巨蛋店"];
+            // 將模擬資料的分院替換為指定的順序與名稱
+            const branches = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
             const roles = ["店長", "諮詢主任", "諮詢師", "醫美師"];
             const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
             
@@ -559,8 +560,7 @@
             }
             
             const branches = {};
-            const branchOrder = []; 
-            let currentBranch = null;
+            let currentBranch = null; // 加回外層變數來記錄當前讀取的分店
             
             for (let i = headerIdx + 1; i < data.length; i++) {
                 const row = data[i];
@@ -570,14 +570,14 @@
                 if (colB !== undefined && colB !== null) {
                     const bName = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
                     if (bName !== "") {
-                        currentBranch = bName;
+                        currentBranch = bName; // 更新當前分店
                         if (!branches[currentBranch]) {
                             branches[currentBranch] = {};
-                            branchOrder.push(currentBranch);
                         }
                     }
                 }
 
+                // 【修復重點】將指標讀取移出 if (colB) 的判斷外，確保合併儲存格的留白列也能成功寫入
                 const metricName = row[2]; 
                 if (currentBranch && metricName && METRIC_MAP[metricName.trim()]) {
                     const key = METRIC_MAP[metricName.trim()];
@@ -668,7 +668,7 @@
                     yStats.dealRate = yStats.totalVisits ? Math.round((yStats.payingCustomers / yStats.totalVisits) * 100) : 0;
                     yStats.avgTicket = yStats.payingCustomers ? Math.round(yStats.monthlyAchieved / yStats.payingCustomers) : 0;
                     yStats.newDealRate = yStats.newVisits ? Math.round((yStats.newDeals / yStats.newVisits) * 100) : 0;
-                    yStats.newAvgTicket = yStats.newDeals ? Math.round(yStats.newAmount / yStats.newDeals) : 0;
+                    yStats.newAvgTicket = yStats.newDeals ? Math.round(qStats.newAmount / yStats.newDeals) : 0;
                     yStats.oldDealRate = yStats.oldVisits ? Math.round((yStats.oldDeals / yStats.oldVisits) * 100) : 0;
                     yStats.oldAvgTicket = yStats.oldDeals ? Math.round(yStats.oldAmount / yStats.oldDeals) : 0;
                     yStats.consumeAvg = yStats.consumePeople ? Math.round(yStats.consumeAmount / yStats.consumePeople) : 0;
@@ -682,7 +682,24 @@
                 return (order[a] || 50) - (order[b] || 50);
             });
 
-            return { branches, periods: finalPeriods, branchOrder };
+            // 強制定義分院排序順序
+            const PREDEFINED_BRANCHES = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
+            const sortedBranchOrder = [];
+            PREDEFINED_BRANCHES.forEach(target => {
+                // 尋找完全相等或是包含該名稱的分店 (例如: Excel 中可能是 "台北仁愛店")
+                const match = Object.keys(branches).find(b => b === target || b.includes(target));
+                if (match && !sortedBranchOrder.includes(match)) {
+                    sortedBranchOrder.push(match);
+                }
+            });
+            // 將不在預設清單中但存在於資料中的其他分店加到最後面，避免遺漏
+            Object.keys(branches).forEach(b => {
+                if (!sortedBranchOrder.includes(b)) {
+                    sortedBranchOrder.push(b);
+                }
+            });
+
+            return { branches, periods: finalPeriods, branchOrder: sortedBranchOrder };
         };
 
         const parseStaffSheet = (sheet) => {
@@ -891,7 +908,6 @@
             const { branches, branchOrder } = parsedData.branchData;
             const bNames = branchOrder && branchOrder.length > 0 ? branchOrder : Object.keys(branches);
 
-            // 抓取所有的時間段（包含自動算出的季度與年度）
             const displayPeriods = availablePeriods;
 
             return (
@@ -981,7 +997,6 @@
             const fileInputRef = useRef(null);
             const dashboardRef = useRef(null);
             
-            // Initial Mock Data
             const mockData = useMemo(() => {
                  return [{
                     branchName: "範例-台北旗艦店",
