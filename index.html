@@ -933,7 +933,7 @@
                                     return (
                                         <React.Fragment key={bName}>
                                             <tr className={trClass}>
-                                                <td rowSpan="3" className={`px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px] ${!isLast ? 'border-b-2' : ''}`}>{bName}</td>
+                                                <td rowSpan="4" className={`px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px] ${!isLast ? 'border-b-2' : ''}`}>{bName}</td>
                                                 <td className="px-5 py-3 font-bold text-slate-500 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">營收目標</td>
                                                 {displayPeriods.map(p => (
                                                     <td key={p} className="px-5 py-3 text-right text-slate-600 border-r border-slate-200 text-base">{formatMoney(getVal(p, 'monthlyGoal'))}</td>
@@ -945,13 +945,24 @@
                                                     <td key={p} className="px-5 py-3 text-right font-bold text-medical-800 border-r border-slate-200 bg-medical-50/20 text-lg">{formatMoney(getVal(p, 'monthlyAchieved'))}</td>
                                                 ))}
                                             </tr>
-                                            <tr className={`${trClass} ${!isLast ? 'border-b-2 border-slate-200' : ''}`}>
+                                            <tr className={trClass}>
                                                 <td className="px-5 py-3 font-bold text-orange-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">達成率</td>
                                                 {displayPeriods.map(p => {
                                                     const rate = getVal(p, 'achievedRate');
                                                     return (
                                                         <td key={p} className={`px-5 py-3 text-right font-black border-r border-slate-200 text-lg ${rate >= 100 ? 'text-green-600' : 'text-orange-600'}`}>
                                                             {formatPercent(rate)}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                            <tr className={`${trClass} ${!isLast ? 'border-b-2 border-slate-200' : ''}`}>
+                                                <td className="px-5 py-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">差額</td>
+                                                {displayPeriods.map(p => {
+                                                    const diff = getVal(p, 'monthlyAchieved') - getVal(p, 'monthlyGoal');
+                                                    return (
+                                                        <td key={p} className={`px-5 py-3 text-right font-bold border-r border-slate-200 text-lg ${diff < 0 ? 'text-red-500' : 'text-emerald-600'}`}>
+                                                            {diff > 0 ? '+' : ''}{formatMoney(diff)}
                                                         </td>
                                                     );
                                                 })}
