@@ -427,7 +427,6 @@
 
         // --- MOCK DATA GENERATOR ---
         const generateMockData = () => {
-            // 將模擬資料的分院替換為指定的順序與名稱
             const branches = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
             const roles = ["店長", "諮詢主任", "諮詢師", "醫美師"];
             const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -907,6 +906,24 @@
 
             const displayPeriods = availablePeriods;
 
+            // 計算總計資料
+            const totals = displayPeriods.reduce((acc, p) => {
+                let sumGoal = 0;
+                let sumAchieved = 0;
+                bNames.forEach(bName => {
+                    const bData = branches[bName] || {};
+                    sumGoal += (bData[p]?.monthlyGoal || 0);
+                    sumAchieved += (bData[p]?.monthlyAchieved || 0);
+                });
+                acc[p] = {
+                    goal: sumGoal,
+                    achieved: sumAchieved,
+                    diff: sumAchieved - sumGoal,
+                    rate: sumGoal ? (sumAchieved / sumGoal) * 100 : 0
+                };
+                return acc;
+            }, {});
+
             return (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden">
                     <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex items-center">
@@ -927,13 +944,12 @@
                                 {bNames.map((bName, bIdx) => {
                                     const bData = branches[bName] || {};
                                     const getVal = (p, key) => bData[p] ? bData[p][key] : 0;
-                                    const isLast = bIdx === bNames.length - 1;
                                     const trClass = "hover:bg-slate-50 transition-colors";
                                     
                                     return (
                                         <React.Fragment key={bName}>
                                             <tr className={trClass}>
-                                                <td rowSpan="4" className={`px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px] ${!isLast ? 'border-b-2' : ''}`}>{bName}</td>
+                                                <td rowSpan="4" className="px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px] border-b-2">{bName}</td>
                                                 <td className="px-5 py-3 font-bold text-slate-500 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">營收目標</td>
                                                 {displayPeriods.map(p => (
                                                     <td key={p} className="px-5 py-3 text-right text-slate-600 border-r border-slate-200 text-base">{formatMoney(getVal(p, 'monthlyGoal'))}</td>
@@ -956,7 +972,7 @@
                                                     );
                                                 })}
                                             </tr>
-                                            <tr className={`${trClass} ${!isLast ? 'border-b-2 border-slate-200' : ''}`}>
+                                            <tr className={`${trClass} border-b-2 border-slate-200`}>
                                                 <td className="px-5 py-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">差額</td>
                                                 {displayPeriods.map(p => {
                                                     const diff = getVal(p, 'monthlyAchieved') - getVal(p, 'monthlyGoal');
@@ -970,6 +986,39 @@
                                         </React.Fragment>
                                     );
                                 })}
+
+                                {/* 總和區塊 */}
+                                <React.Fragment key="total-row">
+                                    <tr className="bg-slate-100 border-t-[3px] border-slate-300">
+                                        <td rowSpan="4" className="px-5 py-4 font-black text-slate-800 border-r border-slate-300 align-middle sticky left-0 bg-slate-100 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xl min-w-[130px] md:min-w-[150px]">所有分院<br/>總計</td>
+                                        <td className="px-5 py-3 font-bold text-slate-700 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總營收目標</td>
+                                        {displayPeriods.map(p => (
+                                            <td key={`t-goal-${p}`} className="px-5 py-3 text-right font-bold text-slate-700 border-r border-slate-300 text-base">{formatMoney(totals[p].goal)}</td>
+                                        ))}
+                                    </tr>
+                                    <tr className="bg-slate-100">
+                                        <td className="px-5 py-3 font-bold text-medical-800 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總實際營收</td>
+                                        {displayPeriods.map(p => (
+                                            <td key={`t-ach-${p}`} className="px-5 py-3 text-right font-black text-medical-900 border-r border-slate-300 bg-medical-200/40 text-lg">{formatMoney(totals[p].achieved)}</td>
+                                        ))}
+                                    </tr>
+                                    <tr className="bg-slate-100">
+                                        <td className="px-5 py-3 font-bold text-orange-700 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總達成率</td>
+                                        {displayPeriods.map(p => (
+                                            <td key={`t-rate-${p}`} className={`px-5 py-3 text-right font-black border-r border-slate-300 text-lg ${totals[p].rate >= 100 ? 'text-green-700' : 'text-orange-600'}`}>
+                                                {formatPercent(totals[p].rate)}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                    <tr className="bg-slate-100">
+                                        <td className="px-5 py-3 font-bold text-slate-700 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總差額</td>
+                                        {displayPeriods.map(p => (
+                                            <td key={`t-diff-${p}`} className={`px-5 py-3 text-right font-black border-r border-slate-300 text-lg ${totals[p].diff < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                                                {totals[p].diff > 0 ? '+' : ''}{formatMoney(totals[p].diff)}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                </React.Fragment>
                             </tbody>
                         </table>
                     </div>
