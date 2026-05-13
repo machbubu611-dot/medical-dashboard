@@ -900,6 +900,8 @@
         };
 
         const OverviewDataTable = ({ parsedData, availablePeriods }) => {
+            const exportRef = useRef(null);
+
             if (!parsedData || !parsedData.branchData) return null;
             const { branches, branchOrder } = parsedData.branchData;
             const bNames = branchOrder && branchOrder.length > 0 ? branchOrder : Object.keys(branches);
@@ -924,14 +926,54 @@
                 return acc;
             }, {});
 
+            // 專屬匯出總表圖片功能
+            const handleExportTable = async () => {
+                if (exportRef.current) {
+                    const scrollContainer = exportRef.current.querySelector('.table-scroll');
+                    
+                    // 記錄原本的 CSS 樣式
+                    const originalOverflow = scrollContainer ? scrollContainer.style.overflowX : '';
+                    const originalWidth = exportRef.current.style.width;
+                    const originalMaxWidth = exportRef.current.style.maxWidth;
+                    
+                    // 強制展開寬度與隱藏捲動條，確保能截圖到最右側的完整資料
+                    if (scrollContainer) scrollContainer.style.overflowX = 'visible';
+                    exportRef.current.style.width = 'max-content';
+                    exportRef.current.style.maxWidth = 'none';
+
+                    try {
+                        const canvas = await html2canvas(exportRef.current, {
+                            scale: 2, // 提高解析度，讓簡報放大也不失真
+                            backgroundColor: '#ffffff',
+                            useCORS: true
+                        });
+                        const link = document.createElement('a');
+                        const dateStr = new Date().toISOString().slice(0, 10);
+                        link.download = `各店營收達成總表_${dateStr}.png`;
+                        link.href = canvas.toDataURL('image/png', 1.0);
+                        link.click();
+                    } finally {
+                        // 截圖完畢後，瞬間還原原本的滑動樣式
+                        if (scrollContainer) scrollContainer.style.overflowX = originalOverflow;
+                        exportRef.current.style.width = originalWidth;
+                        exportRef.current.style.maxWidth = originalMaxWidth;
+                    }
+                }
+            };
+
             return (
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden" ref={exportRef}>
                     <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex justify-between items-center">
                         <div className="flex items-center">
                             <Icon icon="Table" className="mr-2 text-blue-600" size={22}/> 各店營收達成總表
                         </div>
-                        <div className="text-xs text-slate-500 font-bold bg-white px-3 py-1 rounded border border-slate-200 flex items-center shadow-sm animate-pulse">
-                            左右滑動查看完整資料 👉
+                        <div className="flex items-center space-x-3">
+                            <div className="text-xs text-slate-500 font-bold bg-white px-3 py-1 rounded border border-slate-200 flex items-center shadow-sm animate-pulse hidden md:flex">
+                                左右滑動查看完整資料 👉
+                            </div>
+                            <button onClick={handleExportTable} className="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center transition shadow-sm">
+                                <Icon icon="Download" size={16} className="mr-1.5" /> 匯出圖表
+                            </button>
                         </div>
                     </div>
                     <div className="overflow-x-auto table-scroll pb-3">
