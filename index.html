@@ -43,7 +43,6 @@
         
         try {
             const app = initializeApp(firebaseConfig);
-            // Expose to window for React to use
             window.auth = getAuth(app);
             window.db = getFirestore(app);
             window.signInAnonymously = signInAnonymously;
@@ -97,7 +96,6 @@
             font-weight: 600; 
             color: #64748b; 
             margin-bottom: 4px;
-            /* Allow wrap */
             word-wrap: break-word;
             line-height: 1.2;
         }
@@ -141,120 +139,33 @@
             border-bottom: 2px solid #f1f5f9;
             color: #64748b;
         }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.9rem; }
         .info-label { color: #64748b; font-size: 0.8rem; font-weight: 600; }
         .info-val-container { display: flex; align-items: center; }
         .info-val { font-weight: 700; color: #334155; }
-        
-        /* Ranking Icons */
-        .rank-icon { 
-            margin-left: 8px; 
-            font-size: 1.4rem; 
-            line-height: 1;
-            filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2));
-        }
-
-        /* Global Sales Rank Badge */
-        .global-rank-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            font-size: 0.8rem;
-            font-weight: 900;
-            color: white;
-            margin-left: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            font-family: 'Arial', sans-serif;
-        }
+        .rank-icon { margin-left: 8px; font-size: 1.4rem; line-height: 1; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2)); }
+        .global-rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.8rem; font-weight: 900; color: white; margin-left: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-family: 'Arial', sans-serif; }
         .rank-1 { background: linear-gradient(135deg, #FFD700, #FDB931); border: 1px solid #C5A000; color: #7a5c00; text-shadow: 0px 1px 0px rgba(255,255,255,0.4); }
         .rank-2 { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); border: 1px solid #9E9E9E; color: #555; text-shadow: 0px 1px 0px rgba(255,255,255,0.4); }
         .rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); border: 1px solid #8B4513; color: #fff; }
         .rank-other { background-color: #1e293b; border: 1px solid #0f172a; }
-
-        /* Role Badge */
-        .role-badge {
-            background-color: #1e293b !important;
-            color: #ffffff !important;
-            font-weight: 700;
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            border: 1px solid #0f172a;
-            display: inline-block;
-            white-space: nowrap;
-        }
-
-        /* Branch Badge */
-        .branch-badge {
-            background-color: #0284c7; 
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border-radius: 9999px;
-            border: 1px solid #0369a1;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-            margin-left: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        /* Seniority Badge */
-        .seniority-badge {
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 3px 10px;
-            border-radius: 9999px;
-            border: 1px solid #cbd5e1;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-            margin-left: 8px;
-        }
-        
-        /* Logo placeholder styling */
-        .logo-img {
-            max-height: 40px;
-            width: auto;
-            object-fit: contain;
-        }
-        
-        /* Stat Box Rank Icon */
-        .stat-box-rank {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            font-size: 1.2rem;
-        }
-
-        /* Filter Dropdown */
-        .filter-dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 4px;
-            background: white;
-            border: 1px solid #e2e8f0;
+        .role-badge { background-color: #1e293b !important; color: #ffffff !important; font-weight: 700; font-size: 0.8rem; padding: 4px 10px; border-radius: 9999px; border: 1px solid #0f172a; display: inline-block; white-space: nowrap; }
+        .branch-badge { background-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid #0369a1; display: inline-flex; align-items: center; white-space: nowrap; margin-left: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .seniority-badge { background-color: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; white-space: nowrap; margin-left: 8px; }
+        .logo-img { max-height: 40px; width: auto; object-fit: contain; }
         .stat-box-rank { position: absolute; top: 4px; right: 4px; font-size: 1.2rem; }
         .filter-dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 4px; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 0.5rem; z-index: 50; min-width: 220px; max-height: 300px; overflow-y: auto; }
         
         /* 表格滾動條樣式優化 */
-        .table-scroll::-webkit-scrollbar { height: 12px; }
-        .table-scroll::-webkit-scrollbar-track { background: #f8fafc; border-radius: 8px; margin: 0 10px; border: 1px solid #e2e8f0; }
+        .table-scroll::-webkit-scrollbar { height: 12px; width: 12px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; margin: 4px; border: 1px solid #e2e8f0; }
         .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; border: 2px solid #f8fafc; }
         .table-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* 凍結窗格專用樣式 */
+        .sticky-cell { position: sticky; z-index: 30; }
+        .sticky-header { position: sticky; top: 0; z-index: 40; }
+        .sticky-cross { position: sticky; top: 0; z-index: 50; }
     </style>
 </head>
 <body>
@@ -263,7 +174,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Icons ---
         const Icon = ({ icon, size = 18, className = "" }) => {
             const [svgHtml, setSvgHtml] = useState("");
             useEffect(() => {
@@ -280,7 +190,6 @@
             return <span dangerouslySetInnerHTML={{ __html: svgHtml }} className="flex items-center justify-center" />;
         };
 
-        // --- Constants ---
         const SENIORITY_RANGES = [
             { id: '0-1', label: '1年以下 (新人)', min: 0, max: 1 },
             { id: '1-2', label: '1-2年', min: 1, max: 2 },
@@ -300,11 +209,8 @@
             "總銷售業績": "totalSales", "當月銷售業績": "monthlySales", "保養/保健品銷售業績": "productSales"
         };
 
-        const RANK_METRICS = [
-            'cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'
-        ];
+        const RANK_METRICS = ['cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'];
 
-        // --- Helpers ---
         const cleanNumber = (val) => {
             if (typeof val === 'number') return val;
             if (!val) return 0;
@@ -326,12 +232,10 @@
              return parseFloat(num).toFixed(1).replace(/\.0$/, '') + '%';
         }
 
-        // --- SENIORITY CALCULATION ---
         const calculateSeniorityInfo = (val) => {
             if (!val) return { text: "未知", years: 0 };
             const today = new Date('2026-02-11');
             let date;
-
             const strVal = String(val).trim();
             const dateMatch = strVal.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
 
@@ -353,20 +257,14 @@
             if (!date || isNaN(date.getTime())) return { text: "未知", years: 0 };
 
             let months = (today.getFullYear() - date.getFullYear()) * 12 + (today.getMonth() - date.getMonth());
-            if (today.getDate() < date.getDate()) {
-                months--;
-            }
-            
+            if (today.getDate() < date.getDate()) months--;
             if (months < 0) return { text: "未到職", years: 0 };
-            
             const y = Math.floor(months / 12);
             const m = months % 12;
             const text = y > 0 ? (m > 0 ? `${y}年${m}個月` : `${y}年`) : `${m}個月`;
-            
             return { text: text, years: months / 12 };
         };
 
-        // --- RANKING LOGIC ---
         const calculateRankings = (items, bottomThreshold = 3) => {
             if (!items || items.length === 0) return items;
             const rankedItems = items.map(item => ({ ...item, ranks: {} }));
@@ -374,63 +272,27 @@
 
             RANK_METRICS.forEach(metric => {
                 const sorted = [...rankedItems].sort((a, b) => (b.stats[metric] || 0) - (a.stats[metric] || 0));
-                
                 sorted.forEach((item, index) => {
                     const originalItem = rankedItems.find(ri => {
-                        if (ri.name && item.name) {
-                            return ri.name === item.name && ri.branch === item.branch;
-                        }
+                        if (ri.name && item.name) return ri.name === item.name && ri.branch === item.branch;
                         return ri.branchName && ri.branchName === item.branchName;
                     });
-                    
                     if (!originalItem) return;
-
                     if (index === 0) originalItem.ranks[metric] = 'top1';
                     else if (index === 1) originalItem.ranks[metric] = 'top2';
                     else if (index === 2) originalItem.ranks[metric] = 'top3';
-                    
                     if (bottomThreshold > 0 && index >= count - bottomThreshold) {
-                        if (!originalItem.ranks[metric]) {
-                            originalItem.ranks[metric] = 'bottom';
-                        }
+                        if (!originalItem.ranks[metric]) originalItem.ranks[metric] = 'bottom';
                     }
                 });
             });
             return rankedItems;
         };
 
-        const calculateGlobalSalesRanks = (allBranchData) => {
-            let allStaff = [];
-            allBranchData.forEach(branch => {
-                if (branch.staff) {
-                    branch.staff.forEach(s => {
-                        const sales = s.stats.totalSales || s.stats.monthlySales || 0;
-                        allStaff.push({
-                            ...s,
-                            rawSales: sales,
-                            branchName: branch.branchName 
-                        });
-                    });
-                }
-            });
-
-            allStaff.sort((a, b) => b.rawSales - a.rawSales);
-
-            const top10Map = {};
-            allStaff.forEach((s, index) => {
-                const key = `${s.name}_${s.branchName}`;
-                top10Map[key] = index + 1;
-            });
-
-            return top10Map;
-        };
-
-        // --- MOCK DATA GENERATOR ---
         const generateMockData = () => {
             const branches = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
             const roles = ["店長", "諮詢主任", "諮詢師", "醫美師"];
             const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-            
             const staffList = [];
             let globalId = 1;
             
@@ -485,10 +347,6 @@
             return { branchData: branchData, staffData: staffList, periods: demoPeriods, lastUpdated: "預設本地模擬資料" };
         };
 
-
-        // ==========================================
-        // 核心修正區：強化 Excel 月份/季度辨識與加總
-        // ==========================================
         const parseBranchSheet = (sheet) => {
             const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
             if (!data || data.length < 3) return null;
@@ -514,7 +372,6 @@
             const headerRow = data[headerIdx]; 
             const periods = [];
             const periodIndices = {};
-            const rawPeriodMap = {}; 
             
             if(headerRow && Array.isArray(headerRow)) {
                 headerRow.forEach((cell, idx) => {
@@ -552,7 +409,6 @@
                         if (isStandardPeriod && !periodIndices.hasOwnProperty(pName)) {
                             periods.push(pName);
                             periodIndices[pName] = idx;
-                            rawPeriodMap[rawName] = pName;
                         }
                     }
                 });
@@ -570,9 +426,7 @@
                     const bName = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
                     if (bName !== "") {
                         currentBranch = bName; 
-                        if (!branches[currentBranch]) {
-                            branches[currentBranch] = {};
-                        }
+                        if (!branches[currentBranch]) branches[currentBranch] = {};
                     }
                 }
 
@@ -602,12 +456,7 @@
                     if (stats.monthlyGoal && stats.monthlyAchieved) stats.achievedRate = (stats.monthlyAchieved / stats.monthlyGoal) * 100;
                 });
 
-                const quarters = { 
-                    "第一季": ["1月", "2月", "3月"], 
-                    "第二季": ["4月", "5月", "6月"], 
-                    "第三季": ["7月", "8月", "9月"], 
-                    "第四季": ["10月", "11月", "12月"] 
-                };
+                const quarters = { "第一季": ["1月", "2月", "3月"], "第二季": ["4月", "5月", "6月"], "第三季": ["7月", "8月", "9月"], "第四季": ["10月", "11月", "12月"] };
 
                 Object.keys(quarters).forEach(qName => {
                     const targetMonths = quarters[qName];
@@ -615,7 +464,6 @@
                     
                     if (availableMonths.length > 0 && !bData[qName]) {
                         if (!finalPeriods.includes(qName)) finalPeriods.push(qName);
-                        
                         const qStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
                         
                         availableMonths.forEach(m => {
@@ -638,7 +486,6 @@
                         qStats.oldDealRate = qStats.oldVisits ? Math.round((qStats.oldDeals / qStats.oldVisits) * 100) : 0;
                         qStats.oldAvgTicket = qStats.oldDeals ? Math.round(qStats.oldAmount / qStats.oldDeals) : 0;
                         qStats.consumeAvg = qStats.consumePeople ? Math.round(qStats.consumeAmount / qStats.consumePeople) : 0;
-
                         bData[qName] = qStats;
                     }
                 });
@@ -648,7 +495,6 @@
                 
                 if (availableAnnualMonths.length > 0 && !bData["年度"]) {
                     if (!finalPeriods.includes("年度")) finalPeriods.push("年度");
-                    
                     const yStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
                     availableAnnualMonths.forEach(m => {
                         const s = bData[m];
@@ -670,8 +516,7 @@
                     yStats.oldDealRate = yStats.oldVisits ? Math.round((yStats.oldDeals / yStats.oldVisits) * 100) : 0;
                     yStats.oldAvgTicket = yStats.oldDeals ? Math.round(yStats.oldAmount / yStats.oldDeals) : 0;
                     yStats.consumeAvg = yStats.consumePeople ? Math.round(yStats.consumeAmount / yStats.consumePeople) : 0;
-
-                    bData["年度"] = yStats;
+                        bData["年度"] = yStats;
                 }
             });
 
@@ -680,19 +525,14 @@
                 return (order[a] || 50) - (order[b] || 50);
             });
 
-            // 強制定義分院排序順序
             const PREDEFINED_BRANCHES = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
             const sortedBranchOrder = [];
             PREDEFINED_BRANCHES.forEach(target => {
                 const match = Object.keys(branches).find(b => b === target || b.includes(target));
-                if (match && !sortedBranchOrder.includes(match)) {
-                    sortedBranchOrder.push(match);
-                }
+                if (match && !sortedBranchOrder.includes(match)) sortedBranchOrder.push(match);
             });
             Object.keys(branches).forEach(b => {
-                if (!sortedBranchOrder.includes(b)) {
-                    sortedBranchOrder.push(b);
-                }
+                if (!sortedBranchOrder.includes(b)) sortedBranchOrder.push(b);
             });
 
             return { branches, periods: finalPeriods, branchOrder: sortedBranchOrder };
@@ -767,12 +607,11 @@
         // --- UI Components ---
         const RankIcon = ({ rank }) => {
             if (!rank) return null;
-            let icon = null;
-            if (rank === 'top1') icon = <span title="第1名" className="rank-icon">🥇</span>;
-            else if (rank === 'top2') icon = <span title="第2名" className="rank-icon">🥈</span>;
-            else if (rank === 'top3') icon = <span title="第3名" className="rank-icon">🥉</span>;
-            else if (rank === 'bottom') icon = <span title="需加強" className="rank-icon">⚠️</span>;
-            return icon;
+            if (rank === 'top1') return <span title="第1名" className="rank-icon">🥇</span>;
+            if (rank === 'top2') return <span title="第2名" className="rank-icon">🥈</span>;
+            if (rank === 'top3') return <span title="第3名" className="rank-icon">🥉</span>;
+            if (rank === 'bottom') return <span title="需加強" className="rank-icon">⚠️</span>;
+            return null;
         };
 
         const GlobalSalesRankIcon = ({ rank }) => {
@@ -901,6 +740,10 @@
 
         const OverviewDataTable = ({ parsedData, availablePeriods }) => {
             const exportRef = useRef(null);
+            const scrollRef = useRef(null);
+            const [isDragging, setIsDragging] = useState(false);
+            const [startX, setStartX] = useState(0);
+            const [scrollLeft, setScrollLeft] = useState(0);
 
             if (!parsedData || !parsedData.branchData) return null;
             const { branches, branchOrder } = parsedData.branchData;
@@ -908,7 +751,6 @@
 
             const displayPeriods = availablePeriods;
 
-            // 計算總計資料
             const totals = displayPeriods.reduce((acc, p) => {
                 let sumGoal = 0;
                 let sumAchieved = 0;
@@ -926,24 +768,43 @@
                 return acc;
             }, {});
 
-            // 專屬匯出總表圖片功能
+            const handleMouseDown = (e) => {
+                if (!scrollRef.current) return;
+                setIsDragging(true);
+                setStartX(e.pageX - scrollRef.current.offsetLeft);
+                setScrollLeft(scrollRef.current.scrollLeft);
+            };
+
+            const handleMouseLeave = () => setIsDragging(false);
+            const handleMouseUp = () => setIsDragging(false);
+            
+            const handleMouseMove = (e) => {
+                if (!isDragging || !scrollRef.current) return;
+                e.preventDefault();
+                const x = e.pageX - scrollRef.current.offsetLeft;
+                const walk = (x - startX) * 1.5; // 滑動速度
+                scrollRef.current.scrollLeft = scrollLeft - walk;
+            };
+
             const handleExportTable = async () => {
                 if (exportRef.current) {
-                    const scrollContainer = exportRef.current.querySelector('.table-scroll');
+                    const scrollContainer = scrollRef.current;
                     
-                    // 記錄原本的 CSS 樣式
                     const originalOverflow = scrollContainer ? scrollContainer.style.overflowX : '';
                     const originalWidth = exportRef.current.style.width;
                     const originalMaxWidth = exportRef.current.style.maxWidth;
+                    const originalMaxHeight = scrollContainer ? scrollContainer.style.maxHeight : '';
                     
-                    // 強制展開寬度與隱藏捲動條，確保能截圖到最右側的完整資料
-                    if (scrollContainer) scrollContainer.style.overflowX = 'visible';
+                    if (scrollContainer) {
+                        scrollContainer.style.overflowX = 'visible';
+                        scrollContainer.style.maxHeight = 'none';
+                    }
                     exportRef.current.style.width = 'max-content';
                     exportRef.current.style.maxWidth = 'none';
 
                     try {
                         const canvas = await html2canvas(exportRef.current, {
-                            scale: 2, // 提高解析度，讓簡報放大也不失真
+                            scale: 2, 
                             backgroundColor: '#ffffff',
                             useCORS: true
                         });
@@ -953,8 +814,10 @@
                         link.href = canvas.toDataURL('image/png', 1.0);
                         link.click();
                     } finally {
-                        // 截圖完畢後，瞬間還原原本的滑動樣式
-                        if (scrollContainer) scrollContainer.style.overflowX = originalOverflow;
+                        if (scrollContainer) {
+                            scrollContainer.style.overflowX = originalOverflow;
+                            scrollContainer.style.maxHeight = originalMaxHeight;
+                        }
                         exportRef.current.style.width = originalWidth;
                         exportRef.current.style.maxWidth = originalMaxWidth;
                     }
@@ -962,28 +825,37 @@
             };
 
             return (
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden" ref={exportRef}>
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden relative" ref={exportRef}>
                     <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex justify-between items-center">
                         <div className="flex items-center">
                             <Icon icon="Table" className="mr-2 text-blue-600" size={22}/> 各店營收達成總表
                         </div>
                         <div className="flex items-center space-x-3">
                             <div className="text-xs text-slate-500 font-bold bg-white px-3 py-1 rounded border border-slate-200 flex items-center shadow-sm animate-pulse hidden md:flex">
-                                左右滑動查看完整資料 👉
+                                點擊拖曳或左右滑動 👉
                             </div>
                             <button onClick={handleExportTable} className="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center transition shadow-sm">
                                 <Icon icon="Download" size={16} className="mr-1.5" /> 匯出圖表
                             </button>
                         </div>
                     </div>
-                    <div className="overflow-x-auto table-scroll pb-3">
-                        <table className="w-full text-base text-left border-collapse min-w-max">
-                            <thead className="bg-slate-100 text-slate-600 border-b-2 border-slate-200">
+                    {/* 修正：移除 max-h-[70vh] 高度限制，並將 overflow-auto 改為 overflow-x-auto，讓資料全部向下展開 */}
+                    <div 
+                        className={`overflow-x-auto overflow-y-visible table-scroll pb-3 ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
+                        ref={scrollRef}
+                        onMouseDown={handleMouseDown}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseUp={handleMouseUp}
+                        onMouseMove={handleMouseMove}
+                    >
+                        <table className="w-full text-base text-left border-collapse min-w-max relative">
+                            <thead className="text-slate-600 shadow-sm border-b-2 border-slate-200">
                                 <tr>
-                                    <th className="px-5 py-4 font-extrabold whitespace-nowrap sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px]">分店</th>
-                                    <th className="px-5 py-4 font-extrabold whitespace-nowrap border-r border-slate-200 sticky left-[130px] md:left-[150px] bg-slate-100 z-20 text-lg">項目</th>
+                                    {/* 修正：加入 sticky top-0 以及相應的高 z-index 以實現雙向凍結窗格 */}
+                                    <th className="px-5 py-4 font-extrabold whitespace-nowrap sticky-cross top-0 left-0 bg-slate-100 border-r border-slate-200 text-lg min-w-[130px] md:min-w-[150px] outline outline-1 outline-slate-200">分店</th>
+                                    <th className="px-5 py-4 font-extrabold whitespace-nowrap sticky-cross top-0 left-[130px] md:left-[150px] bg-slate-100 border-r border-slate-200 text-lg outline outline-1 outline-slate-200">項目</th>
                                     {displayPeriods.map(p => (
-                                        <th key={p} className="px-5 py-4 font-extrabold whitespace-nowrap text-right min-w-[130px] border-r border-slate-200 text-lg">{p}</th>
+                                        <th key={p} className="px-5 py-4 font-extrabold whitespace-nowrap text-right sticky-header bg-slate-100 border-r border-slate-200 text-lg min-w-[130px] outline outline-1 outline-slate-200">{p}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -996,20 +868,20 @@
                                     return (
                                         <React.Fragment key={bName}>
                                             <tr className={trClass}>
-                                                <td rowSpan="4" className="px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky left-0 bg-white z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-lg min-w-[130px] md:min-w-[150px] border-b-2">{bName}</td>
-                                                <td className="px-5 py-3 font-bold text-slate-500 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">營收目標</td>
+                                                <td rowSpan="4" className="px-5 py-4 font-black text-slate-800 border-r border-slate-200 align-middle sticky-cell left-0 bg-white text-lg min-w-[130px] md:min-w-[150px] border-b-[2px] shadow-[1px_0_0_0_#e2e8f0]">{bName}</td>
+                                                <td className="px-5 py-3 font-bold text-slate-500 border-r border-slate-200 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-white text-base shadow-[1px_0_0_0_#e2e8f0]">營收目標</td>
                                                 {displayPeriods.map(p => (
                                                     <td key={p} className="px-5 py-3 text-right text-slate-600 border-r border-slate-200 text-base">{formatMoney(getVal(p, 'monthlyGoal'))}</td>
                                                 ))}
                                             </tr>
                                             <tr className={trClass}>
-                                                <td className="px-5 py-3 font-bold text-medical-700 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">實際營收</td>
+                                                <td className="px-5 py-3 font-bold text-medical-700 border-r border-slate-200 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-white text-base shadow-[1px_0_0_0_#e2e8f0]">實際營收</td>
                                                 {displayPeriods.map(p => (
                                                     <td key={p} className="px-5 py-3 text-right font-bold text-medical-800 border-r border-slate-200 bg-medical-50/20 text-lg">{formatMoney(getVal(p, 'monthlyAchieved'))}</td>
                                                 ))}
                                             </tr>
                                             <tr className={trClass}>
-                                                <td className="px-5 py-3 font-bold text-orange-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">達成率</td>
+                                                <td className="px-5 py-3 font-bold text-orange-600 border-r border-slate-200 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-white text-base shadow-[1px_0_0_0_#e2e8f0]">達成率</td>
                                                 {displayPeriods.map(p => {
                                                     const rate = getVal(p, 'achievedRate');
                                                     return (
@@ -1019,8 +891,8 @@
                                                     );
                                                 })}
                                             </tr>
-                                            <tr className={`${trClass} border-b-2 border-slate-200`}>
-                                                <td className="px-5 py-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap bg-white sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">差額</td>
+                                            <tr className={`${trClass} border-b-[2px] border-slate-200`}>
+                                                <td className="px-5 py-3 font-bold text-slate-600 border-r border-slate-200 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-white text-base shadow-[1px_0_0_0_#e2e8f0]">差額</td>
                                                 {displayPeriods.map(p => {
                                                     const diff = getVal(p, 'monthlyAchieved') - getVal(p, 'monthlyGoal');
                                                     return (
@@ -1037,20 +909,20 @@
                                 {/* 總和區塊 */}
                                 <React.Fragment key="total-row">
                                     <tr className="bg-slate-100 border-t-[3px] border-slate-300">
-                                        <td rowSpan="4" className="px-5 py-4 font-black text-slate-800 border-r border-slate-300 align-middle sticky left-0 bg-slate-100 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xl min-w-[130px] md:min-w-[150px]">所有分院<br/>總計</td>
-                                        <td className="px-5 py-3 font-bold text-slate-700 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總營收目標</td>
+                                        <td rowSpan="4" className="px-5 py-4 font-black text-slate-800 border-r border-slate-300 align-middle sticky-cell left-0 bg-slate-100 text-xl min-w-[130px] md:min-w-[150px] shadow-[1px_0_0_0_#cbd5e1]">所有分院<br/>總計</td>
+                                        <td className="px-5 py-3 font-bold text-slate-700 border-r border-slate-300 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-slate-100 text-base shadow-[1px_0_0_0_#cbd5e1]">總營收目標</td>
                                         {displayPeriods.map(p => (
                                             <td key={`t-goal-${p}`} className="px-5 py-3 text-right font-bold text-slate-700 border-r border-slate-300 text-base">{formatMoney(totals[p].goal)}</td>
                                         ))}
                                     </tr>
                                     <tr className="bg-slate-100">
-                                        <td className="px-5 py-3 font-bold text-medical-800 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總實際營收</td>
+                                        <td className="px-5 py-3 font-bold text-medical-800 border-r border-slate-300 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-slate-100 text-base shadow-[1px_0_0_0_#cbd5e1]">總實際營收</td>
                                         {displayPeriods.map(p => (
                                             <td key={`t-ach-${p}`} className="px-5 py-3 text-right font-black text-medical-900 border-r border-slate-300 bg-medical-200/40 text-lg">{formatMoney(totals[p].achieved)}</td>
                                         ))}
                                     </tr>
                                     <tr className="bg-slate-100">
-                                        <td className="px-5 py-3 font-bold text-orange-700 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總達成率</td>
+                                        <td className="px-5 py-3 font-bold text-orange-700 border-r border-slate-300 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-slate-100 text-base shadow-[1px_0_0_0_#cbd5e1]">總達成率</td>
                                         {displayPeriods.map(p => (
                                             <td key={`t-rate-${p}`} className={`px-5 py-3 text-right font-black border-r border-slate-300 text-lg ${totals[p].rate >= 100 ? 'text-green-700' : 'text-orange-600'}`}>
                                                 {formatPercent(totals[p].rate)}
@@ -1058,7 +930,7 @@
                                         ))}
                                     </tr>
                                     <tr className="bg-slate-100">
-                                        <td className="px-5 py-3 font-bold text-slate-700 border-r border-slate-300 whitespace-nowrap bg-slate-100 sticky left-[130px] md:left-[150px] z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-base">總差額</td>
+                                        <td className="px-5 py-3 font-bold text-slate-700 border-r border-slate-300 whitespace-nowrap sticky-cell left-[130px] md:left-[150px] bg-slate-100 text-base shadow-[1px_0_0_0_#cbd5e1]">總差額</td>
                                         {displayPeriods.map(p => (
                                             <td key={`t-diff-${p}`} className={`px-5 py-3 text-right font-black border-r border-slate-300 text-lg ${totals[p].diff < 0 ? 'text-red-600' : 'text-emerald-600'}`}>
                                                 {totals[p].diff > 0 ? '+' : ''}{formatMoney(totals[p].diff)}
@@ -1068,6 +940,175 @@
                                 </React.Fragment>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            );
+        };
+
+        const YtdGapChart = ({ parsedData }) => {
+            const exportRef = useRef(null);
+            
+            if (!parsedData || !parsedData.branchData) return null;
+            const { branches, branchOrder } = parsedData.branchData;
+            const bNames = branchOrder && branchOrder.length > 0 ? branchOrder : Object.keys(branches);
+
+            // 運算累積資料 (自動抓取所有單月資料加總)
+            const ytdData = bNames.map(bName => {
+                const bData = branches[bName] || {};
+                let ytdGoal = 0;
+                let ytdAchieved = 0;
+                
+                Object.keys(bData).forEach(p => {
+                    // 只把單一月份加起來，避免與「季度/年度」重複計算
+                    if (/^\d+月$/.test(p)) {
+                        ytdGoal += (bData[p].monthlyGoal || 0);
+                        ytdAchieved += (bData[p].monthlyAchieved || 0);
+                    }
+                });
+
+                const gap = ytdAchieved - ytdGoal; 
+                const rate = ytdGoal ? (ytdAchieved / ytdGoal) * 100 : 0;
+
+                return { bName, ytdGoal, ytdAchieved, gap, rate };
+            });
+
+            // 總和
+            const totalGoal = ytdData.reduce((acc, curr) => acc + curr.ytdGoal, 0);
+            const totalAchieved = ytdData.reduce((acc, curr) => acc + curr.ytdAchieved, 0);
+            const totalGap = totalAchieved - totalGoal;
+            const totalRate = totalGoal ? (totalAchieved / totalGoal) * 100 : 0;
+
+            const handleExportChart = async () => {
+                if (exportRef.current) {
+                    try {
+                        const canvas = await html2canvas(exportRef.current, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                        const link = document.createElement('a');
+                        const dateStr = new Date().toISOString().slice(0, 10);
+                        link.download = `年度累積營收與缺口分析_${dateStr}.png`;
+                        link.href = canvas.toDataURL('image/png', 1.0);
+                        link.click();
+                    } catch (e) {
+                        console.error("Export failed", e);
+                    }
+                }
+            };
+
+            return (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden" ref={exportRef}>
+                    <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex justify-between items-center">
+                        <div className="flex items-center">
+                            <Icon icon="BarChartHorizontal" className="mr-2 text-orange-500" size={22}/> 各店年度累積營收與缺口分析
+                        </div>
+                        <button onClick={handleExportChart} className="bg-white hover:bg-orange-50 text-orange-600 border border-orange-200 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center transition shadow-sm">
+                            <Icon icon="Download" size={16} className="mr-1.5" /> 匯出圖表
+                        </button>
+                    </div>
+                    <div className="p-6 md:p-8">
+                        {ytdData.map((item, idx) => {
+                            // 動態視覺比例運算：以「目標」和「實際」的最大值作為 100% 容器寬度
+                            const maxVal = Math.max(item.ytdGoal, item.ytdAchieved, 1);
+                            const targetPct = (item.ytdGoal / maxVal) * 100;
+                            const achievedPct = (item.ytdAchieved / maxVal) * 100;
+                            const isOver = item.ytdAchieved >= item.ytdGoal;
+
+                            return (
+                                <div key={item.bName} className="mb-8">
+                                    <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-2">
+                                        <div className="font-black text-xl text-slate-800 mb-2 md:mb-0">{item.bName}</div>
+                                        <div className="text-right text-base">
+                                            <span className="text-slate-500 mr-4 inline-block">累積目標: {formatMoney(item.ytdGoal)}</span>
+                                            <span className="text-medical-600 font-bold mr-4 inline-block">累積營收: {formatMoney(item.ytdAchieved)}</span>
+                                            <span className={`font-black inline-block px-3 py-1 rounded-md ${item.gap < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                                缺口/超標: {item.gap > 0 ? '+' : ''}{formatMoney(item.gap)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {/* Progress Bar - Layered Design */}
+                                    <div className="relative w-full h-8 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200 isolate">
+                                        
+                                        {/* 目標虛線與標籤 */}
+                                        <div 
+                                            className="absolute top-0 bottom-0 z-20 border-r-[3px] border-dashed border-slate-800/60 pointer-events-none transition-all duration-1000"
+                                            style={{ left: 0, width: `${targetPct}%` }}
+                                        >
+                                            <div className="absolute right-1 top-1 text-[10px] text-slate-700 bg-white/90 px-1.5 py-0.5 rounded shadow-sm font-bold">目標線</div>
+                                        </div>
+
+                                        {/* 缺口紅底條紋 (僅未達標時顯示，填補實際到目標的距離) */}
+                                        {!isOver && (
+                                            <div 
+                                                className="absolute top-0 bottom-0 z-0 bg-red-400/20 transition-all duration-1000"
+                                                style={{ left: `${achievedPct}%`, width: `${targetPct - achievedPct}%` }}
+                                            >
+                                                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
+                                            </div>
+                                        )}
+
+                                        {/* 實際營收進度條 */}
+                                        <div 
+                                            className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-3 text-sm font-black text-white transition-all duration-1000 z-10 ${isOver ? 'bg-emerald-500' : 'bg-medical-500'}`}
+                                            style={{ width: `${achievedPct}%` }}
+                                        >
+                                            {item.rate >= 5 ? formatPercent(item.rate) : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        
+                        {/* 總結區塊 */}
+                        <div className="mt-10 pt-6 border-t-[3px] border-slate-200">
+                            <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-3">
+                                <div className="font-black text-2xl text-slate-800 mb-2 md:mb-0 flex items-center">
+                                    <Icon icon="Target" className="mr-2 text-medical-600" size={24}/> 全集團年度累積
+                                </div>
+                                <div className="text-right text-lg">
+                                    <span className="text-slate-500 mr-4 inline-block">總目標: {formatMoney(totalGoal)}</span>
+                                    <span className="text-medical-600 font-bold mr-4 inline-block">總營收: {formatMoney(totalAchieved)}</span>
+                                    <span className={`font-black inline-block px-4 py-1.5 rounded-lg ${totalGap < 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                        總差額: {totalGap > 0 ? '+' : ''}{formatMoney(totalGap)}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {/* 總結的動態視覺比例運算 */}
+                            {(() => {
+                                const totalMaxVal = Math.max(totalGoal, totalAchieved, 1);
+                                const totalTargetPct = (totalGoal / totalMaxVal) * 100;
+                                const totalAchievedPct = (totalAchieved / totalMaxVal) * 100;
+                                const isTotalOver = totalAchieved >= totalGoal;
+
+                                return (
+                                    <div className="relative w-full h-10 bg-slate-200 rounded-full overflow-hidden shadow-inner border border-slate-300 isolate">
+                                        {/* 目標虛線與標籤 */}
+                                        <div 
+                                            className="absolute top-0 bottom-0 z-20 border-r-[3px] border-dashed border-slate-800/60 pointer-events-none transition-all duration-1000"
+                                            style={{ left: 0, width: `${totalTargetPct}%` }}
+                                        >
+                                            <div className="absolute right-1.5 top-1.5 text-xs text-slate-700 bg-white/90 px-2 py-0.5 rounded shadow-sm font-black">目標線</div>
+                                        </div>
+
+                                        {/* 缺口紅底條紋 */}
+                                        {!isTotalOver && (
+                                            <div 
+                                                className="absolute top-0 bottom-0 z-0 bg-red-400/30 transition-all duration-1000"
+                                                style={{ left: `${totalAchievedPct}%`, width: `${totalTargetPct - totalAchievedPct}%` }}
+                                            >
+                                                <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
+                                            </div>
+                                        )}
+
+                                        {/* 實際營收進度條 */}
+                                        <div 
+                                            className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-4 text-base font-black text-white transition-all duration-1000 z-10 shadow-md ${isTotalOver ? 'bg-emerald-500' : 'bg-medical-600'}`}
+                                            style={{ width: `${totalAchievedPct}%` }}
+                                        >
+                                            {formatPercent(totalRate)}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
                     </div>
                 </div>
             );
@@ -1596,9 +1637,12 @@
                                      </div>
                                 </div>
                                 
-                                {/* 僅在「營運績效總表」分頁顯示各店營收達成總表 */}
+                                {/* 修正順序：將分析圖表放在總表上方 */}
                                 {activeBranch.isTotalOverview && (
-                                    <OverviewDataTable parsedData={parsedData} availablePeriods={availablePeriods} />
+                                    <>
+                                        <YtdGapChart parsedData={parsedData} />
+                                        <OverviewDataTable parsedData={parsedData} availablePeriods={availablePeriods} />
+                                    </>
                                 )}
                             </>
                         )}
