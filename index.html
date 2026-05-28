@@ -43,6 +43,7 @@
         
         try {
             const app = initializeApp(firebaseConfig);
+            // Expose to window for React to use
             window.auth = getAuth(app);
             window.db = getFirestore(app);
             window.signInAnonymously = signInAnonymously;
@@ -372,6 +373,7 @@
             const headerRow = data[headerIdx]; 
             const periods = [];
             const periodIndices = {};
+            const rawPeriodMap = {}; 
             
             if(headerRow && Array.isArray(headerRow)) {
                 headerRow.forEach((cell, idx) => {
@@ -409,6 +411,7 @@
                         if (isStandardPeriod && !periodIndices.hasOwnProperty(pName)) {
                             periods.push(pName);
                             periodIndices[pName] = idx;
+                            rawPeriodMap[rawName] = pName;
                         }
                     }
                 });
@@ -607,11 +610,12 @@
         // --- UI Components ---
         const RankIcon = ({ rank }) => {
             if (!rank) return null;
-            if (rank === 'top1') return <span title="第1名" className="rank-icon">🥇</span>;
-            if (rank === 'top2') return <span title="第2名" className="rank-icon">🥈</span>;
-            if (rank === 'top3') return <span title="第3名" className="rank-icon">🥉</span>;
-            if (rank === 'bottom') return <span title="需加強" className="rank-icon">⚠️</span>;
-            return null;
+            let icon = null;
+            if (rank === 'top1') icon = <span title="第1名" className="rank-icon">🥇</span>;
+            else if (rank === 'top2') icon = <span title="第2名" className="rank-icon">🥈</span>;
+            else if (rank === 'top3') icon = <span title="第3名" className="rank-icon">🥉</span>;
+            else if (rank === 'bottom') icon = <span title="需加強" className="rank-icon">⚠️</span>;
+            return icon;
         };
 
         const GlobalSalesRankIcon = ({ rank }) => {
@@ -839,7 +843,6 @@
                             </button>
                         </div>
                     </div>
-                    {/* 修正：移除 max-h-[70vh] 高度限制，並將 overflow-auto 改為 overflow-x-auto，讓資料全部向下展開 */}
                     <div 
                         className={`overflow-x-auto overflow-y-visible table-scroll pb-3 ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
                         ref={scrollRef}
@@ -851,7 +854,6 @@
                         <table className="w-full text-base text-left border-collapse min-w-max relative">
                             <thead className="text-slate-600 shadow-sm border-b-2 border-slate-200">
                                 <tr>
-                                    {/* 修正：加入 sticky top-0 以及相應的高 z-index 以實現雙向凍結窗格 */}
                                     <th className="px-5 py-4 font-extrabold whitespace-nowrap sticky-cross top-0 left-0 bg-slate-100 border-r border-slate-200 text-lg min-w-[130px] md:min-w-[150px] outline outline-1 outline-slate-200">分店</th>
                                     <th className="px-5 py-4 font-extrabold whitespace-nowrap sticky-cross top-0 left-[130px] md:left-[150px] bg-slate-100 border-r border-slate-200 text-lg outline outline-1 outline-slate-200">項目</th>
                                     {displayPeriods.map(p => (
@@ -1023,33 +1025,42 @@
                                             </span>
                                         </div>
                                     </div>
-                                    {/* Progress Bar - Layered Design */}
-                                    <div className="relative w-full h-8 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200 isolate">
+                                    
+                                    {/* 新版多層次立體排版：目標線移出進度條外，不再互相遮擋 */}
+                                    <div className="relative w-full mt-6 mb-2">
                                         
-                                        {/* 目標虛線與標籤 */}
+                                        {/* 目標虛線與獨立標籤 (懸浮在最上層) */}
                                         <div 
-                                            className="absolute top-0 bottom-0 z-20 border-r-[3px] border-dashed border-slate-800/60 pointer-events-none transition-all duration-1000"
+                                            className="absolute top-[-24px] bottom-[-8px] z-20 pointer-events-none transition-all duration-1000"
                                             style={{ left: 0, width: `${targetPct}%` }}
                                         >
-                                            <div className="absolute right-1 top-1 text-[10px] text-slate-700 bg-white/90 px-1.5 py-0.5 rounded shadow-sm font-bold">目標線</div>
+                                            <div className="absolute right-[-1.5px] top-0 bottom-0 border-r-[3px] border-dashed border-slate-800/60"></div>
+                                            <div className="absolute right-[-1.5px] top-0 translate-x-1/2 text-[11px] text-slate-700 bg-white border border-slate-300 px-2 py-0.5 rounded-full shadow-sm font-bold whitespace-nowrap">
+                                                目標線
+                                            </div>
                                         </div>
 
-                                        {/* 缺口紅底條紋 (僅未達標時顯示，填補實際到目標的距離) */}
-                                        {!isOver && (
-                                            <div 
-                                                className="absolute top-0 bottom-0 z-0 bg-red-400/20 transition-all duration-1000"
-                                                style={{ left: `${achievedPct}%`, width: `${targetPct - achievedPct}%` }}
-                                            >
-                                                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
-                                            </div>
-                                        )}
+                                        {/* 進度條本體 */}
+                                        <div className="relative w-full h-8 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200 isolate">
+                                            
+                                            {/* 缺口紅底條紋 (僅未達標時顯示) */}
+                                            {!isOver && (
+                                                <div 
+                                                    className="absolute top-0 bottom-0 z-0 bg-red-400/20 transition-all duration-1000"
+                                                    style={{ left: `${achievedPct}%`, width: `${targetPct - achievedPct}%` }}
+                                                >
+                                                    <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
+                                                </div>
+                                            )}
 
-                                        {/* 實際營收進度條 */}
-                                        <div 
-                                            className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-3 text-sm font-black text-white transition-all duration-1000 z-10 ${isOver ? 'bg-emerald-500' : 'bg-medical-500'}`}
-                                            style={{ width: `${achievedPct}%` }}
-                                        >
-                                            {item.rate >= 5 ? formatPercent(item.rate) : ''}
+                                            {/* 實際營收進度條 */}
+                                            <div 
+                                                className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-3 text-sm font-black text-white transition-all duration-1000 z-10 shadow-sm ${isOver ? 'bg-emerald-500' : 'bg-medical-500'}`}
+                                                style={{ width: `${achievedPct}%` }}
+                                            >
+                                                {/* 避免極小數值時文字溢出，設定至少達 8% 才顯示文字 */}
+                                                {item.rate >= 8 ? formatPercent(item.rate) : ''}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1071,7 +1082,7 @@
                                 </div>
                             </div>
                             
-                            {/* 總結的動態視覺比例運算 */}
+                            {/* 總結區塊的動態多層次視覺 */}
                             {(() => {
                                 const totalMaxVal = Math.max(totalGoal, totalAchieved, 1);
                                 const totalTargetPct = (totalGoal / totalMaxVal) * 100;
@@ -1079,31 +1090,37 @@
                                 const isTotalOver = totalAchieved >= totalGoal;
 
                                 return (
-                                    <div className="relative w-full h-10 bg-slate-200 rounded-full overflow-hidden shadow-inner border border-slate-300 isolate">
+                                    <div className="relative w-full mt-8 mb-4">
                                         {/* 目標虛線與標籤 */}
                                         <div 
-                                            className="absolute top-0 bottom-0 z-20 border-r-[3px] border-dashed border-slate-800/60 pointer-events-none transition-all duration-1000"
+                                            className="absolute top-[-28px] bottom-[-10px] z-20 pointer-events-none transition-all duration-1000"
                                             style={{ left: 0, width: `${totalTargetPct}%` }}
                                         >
-                                            <div className="absolute right-1.5 top-1.5 text-xs text-slate-700 bg-white/90 px-2 py-0.5 rounded shadow-sm font-black">目標線</div>
+                                            <div className="absolute right-[-1.5px] top-0 bottom-0 border-r-[3px] border-dashed border-slate-800/70"></div>
+                                            <div className="absolute right-[-1.5px] top-0 translate-x-1/2 text-xs text-slate-800 bg-white border-2 border-slate-300 px-2 py-0.5 rounded-full shadow-sm font-black whitespace-nowrap">
+                                                總目標線
+                                            </div>
                                         </div>
 
-                                        {/* 缺口紅底條紋 */}
-                                        {!isTotalOver && (
-                                            <div 
-                                                className="absolute top-0 bottom-0 z-0 bg-red-400/30 transition-all duration-1000"
-                                                style={{ left: `${totalAchievedPct}%`, width: `${totalTargetPct - totalAchievedPct}%` }}
-                                            >
-                                                <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
-                                            </div>
-                                        )}
+                                        {/* 進度條本體 */}
+                                        <div className="relative w-full h-12 bg-slate-200 rounded-full overflow-hidden shadow-inner border border-slate-300 isolate">
+                                            {/* 缺口紅底條紋 */}
+                                            {!isTotalOver && (
+                                                <div 
+                                                    className="absolute top-0 bottom-0 z-0 bg-red-400/30 transition-all duration-1000"
+                                                    style={{ left: `${totalAchievedPct}%`, width: `${totalTargetPct - totalAchievedPct}%` }}
+                                                >
+                                                    <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
+                                                </div>
+                                            )}
 
-                                        {/* 實際營收進度條 */}
-                                        <div 
-                                            className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-4 text-base font-black text-white transition-all duration-1000 z-10 shadow-md ${isTotalOver ? 'bg-emerald-500' : 'bg-medical-600'}`}
-                                            style={{ width: `${totalAchievedPct}%` }}
-                                        >
-                                            {formatPercent(totalRate)}
+                                            {/* 實際營收進度條 */}
+                                            <div 
+                                                className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-4 text-lg font-black text-white transition-all duration-1000 z-10 shadow-md ${isTotalOver ? 'bg-emerald-500' : 'bg-medical-600'}`}
+                                                style={{ width: `${totalAchievedPct}%` }}
+                                            >
+                                                {totalRate >= 5 ? formatPercent(totalRate) : ''}
+                                            </div>
                                         </div>
                                     </div>
                                 );
