@@ -995,15 +995,76 @@
                 }
             };
 
+            // --- 新增：匯出 Excel 功能 ---
+            const handleExportExcel = () => {
+                // 1. 建立 Excel 標題列
+                const excelData = [
+                    ['分店', '累積營收目標', '累積實際營收', '缺口/超標差額', '達成率']
+                ];
+                
+                // 2. 寫入各店純數字資料，方便後續 Excel 運算
+                ytdData.forEach(item => {
+                    excelData.push([
+                        item.bName,
+                        item.ytdGoal,         // 純數字目標
+                        item.ytdAchieved,     // 純數字實際營收
+                        item.gap,             // 純數字差額
+                        item.rate / 100       // 換算成小數點，給 Excel 呈現百分比用
+                    ]);
+                });
+                
+                // 3. 寫入總計列
+                excelData.push([
+                    '全集團總計',
+                    totalGoal,
+                    totalAchieved,
+                    totalGap,
+                    totalRate / 100
+                ]);
+
+                // 4. 將資料轉為 SheetJS 的 Worksheet
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+                // 5. 設定達成率的 Excel 儲存格格式為百分比 (例如：95.5%)
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+                    // 第 4 欄 (index 4) 是達成率
+                    const cellRef = XLSX.utils.encode_cell({c: 4, r: R});
+                    if (ws[cellRef]) {
+                        ws[cellRef].z = "0.0%"; 
+                    }
+                }
+
+                // 6. 設定友善的欄寬
+                ws['!cols'] = [
+                    { wch: 20 }, // 分店
+                    { wch: 15 }, // 目標
+                    { wch: 15 }, // 實際
+                    { wch: 15 }, // 差額
+                    { wch: 12 }  // 達成率
+                ];
+
+                // 7. 產生並下載 Excel
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "累積營收與缺口");
+                const dateStr = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(wb, `各店年度累積營收與缺口分析_${dateStr}.xlsx`);
+            };
+
             return (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 overflow-hidden" ref={exportRef}>
-                    <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex justify-between items-center">
+                    <div className="bg-slate-50 px-5 py-4 border-b border-slate-100 text-lg font-black text-slate-700 flex flex-wrap justify-between items-center gap-3">
                         <div className="flex items-center">
                             <Icon icon="BarChartHorizontal" className="mr-2 text-orange-500" size={22}/> 各店年度累積營收與缺口分析
                         </div>
-                        <button onClick={handleExportChart} className="bg-white hover:bg-orange-50 text-orange-600 border border-orange-200 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center transition shadow-sm">
-                            <Icon icon="Download" size={16} className="mr-1.5" /> 匯出圖表
-                        </button>
+                        <div className="flex space-x-3">
+                            <button onClick={handleExportExcel} className="bg-white hover:bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center transition shadow-sm">
+                                <Icon icon="FileSpreadsheet" size={16} className="mr-1.5" /> 匯出 Excel
+                            </button>
+                            <button onClick={handleExportChart} className="bg-white hover:bg-orange-50 text-orange-600 border border-orange-200 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center transition shadow-sm">
+                                <Icon icon="Download" size={16} className="mr-1.5" /> 匯出圖表
+                            </button>
+                        </div>
                     </div>
                     <div className="p-6 md:p-8">
                         {ytdData.map((item, idx) => {
