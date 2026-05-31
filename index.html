@@ -97,6 +97,7 @@
             font-weight: 600; 
             color: #64748b; 
             margin-bottom: 4px;
+            /* Allow wrap */
             word-wrap: break-word;
             line-height: 1.2;
         }
@@ -140,22 +141,120 @@
             border-bottom: 2px solid #f1f5f9;
             color: #64748b;
         }
-        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.9rem; }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
         .info-label { color: #64748b; font-size: 0.8rem; font-weight: 600; }
         .info-val-container { display: flex; align-items: center; }
         .info-val { font-weight: 700; color: #334155; }
-        .rank-icon { margin-left: 8px; font-size: 1.4rem; line-height: 1; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2)); }
-        .global-rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: 0.8rem; font-weight: 900; color: white; margin-left: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-family: 'Arial', sans-serif; }
+        
+        /* Ranking Icons */
+        .rank-icon { 
+            margin-left: 8px; 
+            font-size: 1.4rem; 
+            line-height: 1;
+            filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2));
+        }
+
+        /* Global Sales Rank Badge */
+        .global-rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: white;
+            margin-left: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-family: 'Arial', sans-serif;
+        }
         .rank-1 { background: linear-gradient(135deg, #FFD700, #FDB931); border: 1px solid #C5A000; color: #7a5c00; text-shadow: 0px 1px 0px rgba(255,255,255,0.4); }
         .rank-2 { background: linear-gradient(135deg, #E0E0E0, #BDBDBD); border: 1px solid #9E9E9E; color: #555; text-shadow: 0px 1px 0px rgba(255,255,255,0.4); }
         .rank-3 { background: linear-gradient(135deg, #CD7F32, #A0522D); border: 1px solid #8B4513; color: #fff; }
         .rank-other { background-color: #1e293b; border: 1px solid #0f172a; }
-        .role-badge { background-color: #1e293b !important; color: #ffffff !important; font-weight: 700; font-size: 0.8rem; padding: 4px 10px; border-radius: 9999px; border: 1px solid #0f172a; display: inline-block; white-space: nowrap; }
-        .branch-badge { background-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid #0369a1; display: inline-flex; align-items: center; white-space: nowrap; margin-left: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .seniority-badge { background-color: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; white-space: nowrap; margin-left: 8px; }
-        .logo-img { max-height: 40px; width: auto; object-fit: contain; }
-        .stat-box-rank { position: absolute; top: 4px; right: 4px; font-size: 1.2rem; }
-        .filter-dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 4px; background: white; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 0.5rem; z-index: 50; min-width: 220px; max-height: 300px; overflow-y: auto; }
+
+        /* Role Badge */
+        .role-badge {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            border: 1px solid #0f172a;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        /* Branch Badge */
+        .branch-badge {
+            background-color: #0284c7; 
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            border: 1px solid #0369a1;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            margin-left: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Seniority Badge */
+        .seniority-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            border: 1px solid #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+        
+        /* Logo placeholder styling */
+        .logo-img {
+            max-height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        /* Stat Box Rank Icon */
+        .stat-box-rank {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 1.2rem;
+        }
+
+        /* Filter Dropdown */
+        .filter-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            padding: 0.5rem;
+            z-index: 50;
+            min-width: 220px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
         
         /* 表格滾動條樣式優化 */
         .table-scroll::-webkit-scrollbar { height: 12px; width: 12px; }
@@ -175,6 +274,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
+        // --- Icons ---
         const Icon = ({ icon, size = 18, className = "" }) => {
             const [svgHtml, setSvgHtml] = useState("");
             useEffect(() => {
@@ -191,6 +291,7 @@
             return <span dangerouslySetInnerHTML={{ __html: svgHtml }} className="flex items-center justify-center" />;
         };
 
+        // --- Constants ---
         const SENIORITY_RANGES = [
             { id: '0-1', label: '1年以下 (新人)', min: 0, max: 1 },
             { id: '1-2', label: '1-2年', min: 1, max: 2 },
@@ -210,8 +311,11 @@
             "總銷售業績": "totalSales", "當月銷售業績": "monthlySales", "保養/保健品銷售業績": "productSales"
         };
 
-        const RANK_METRICS = ['cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'];
+        const RANK_METRICS = [
+            'cardRate', 'dealRate', 'avgTicket', 'newDealRate', 'newAvgTicket', 'oldDealRate', 'oldAvgTicket'
+        ];
 
+        // --- Helpers ---
         const cleanNumber = (val) => {
             if (typeof val === 'number') return val;
             if (!val) return 0;
@@ -233,10 +337,14 @@
              return parseFloat(num).toFixed(1).replace(/\.0$/, '') + '%';
         }
 
+        // --- SENIORITY CALCULATION (Updated to current date) ---
         const calculateSeniorityInfo = (val) => {
             if (!val) return { text: "未知", years: 0 };
-            const today = new Date('2026-02-11');
+            
+            // 使用動態時間，確保年資始終保持最新
+            const today = new Date();
             let date;
+
             const strVal = String(val).trim();
             const dateMatch = strVal.match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
 
@@ -258,14 +366,21 @@
             if (!date || isNaN(date.getTime())) return { text: "未知", years: 0 };
 
             let months = (today.getFullYear() - date.getFullYear()) * 12 + (today.getMonth() - date.getMonth());
-            if (today.getDate() < date.getDate()) months--;
+            if (today.getDate() < date.getDate()) {
+                months--;
+            }
+            
             if (months < 0) return { text: "未到職", years: 0 };
+            if (months === 0) return { text: "未滿1個月", years: 0 };
+            
             const y = Math.floor(months / 12);
             const m = months % 12;
             const text = y > 0 ? (m > 0 ? `${y}年${m}個月` : `${y}年`) : `${m}個月`;
+            
             return { text: text, years: months / 12 };
         };
 
+        // --- RANKING LOGIC ---
         const calculateRankings = (items, bottomThreshold = 3) => {
             if (!items || items.length === 0) return items;
             const rankedItems = items.map(item => ({ ...item, ranks: {} }));
@@ -273,27 +388,63 @@
 
             RANK_METRICS.forEach(metric => {
                 const sorted = [...rankedItems].sort((a, b) => (b.stats[metric] || 0) - (a.stats[metric] || 0));
+                
                 sorted.forEach((item, index) => {
                     const originalItem = rankedItems.find(ri => {
-                        if (ri.name && item.name) return ri.name === item.name && ri.branch === item.branch;
+                        if (ri.name && item.name) {
+                            return ri.name === item.name && ri.branch === item.branch;
+                        }
                         return ri.branchName && ri.branchName === item.branchName;
                     });
+                    
                     if (!originalItem) return;
+
                     if (index === 0) originalItem.ranks[metric] = 'top1';
                     else if (index === 1) originalItem.ranks[metric] = 'top2';
                     else if (index === 2) originalItem.ranks[metric] = 'top3';
+                    
                     if (bottomThreshold > 0 && index >= count - bottomThreshold) {
-                        if (!originalItem.ranks[metric]) originalItem.ranks[metric] = 'bottom';
+                        if (!originalItem.ranks[metric]) {
+                            originalItem.ranks[metric] = 'bottom';
+                        }
                     }
                 });
             });
             return rankedItems;
         };
 
+        const calculateGlobalSalesRanks = (allBranchData) => {
+            let allStaff = [];
+            allBranchData.forEach(branch => {
+                if (branch.staff) {
+                    branch.staff.forEach(s => {
+                        const sales = s.stats.totalSales || s.stats.monthlySales || 0;
+                        allStaff.push({
+                            ...s,
+                            rawSales: sales,
+                            branchName: branch.branchName 
+                        });
+                    });
+                }
+            });
+
+            allStaff.sort((a, b) => b.rawSales - a.rawSales);
+
+            const top10Map = {};
+            allStaff.forEach((s, index) => {
+                const key = `${s.name}_${s.branchName}`;
+                top10Map[key] = index + 1;
+            });
+
+            return top10Map;
+        };
+
+        // --- MOCK DATA GENERATOR ---
         const generateMockData = () => {
             const branches = ["台北仁愛", "桃園中正", "新竹光明", "台中向上", "台中崇德", "高雄巨蛋"];
             const roles = ["店長", "諮詢主任", "諮詢師", "醫美師"];
             const r = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            
             const staffList = [];
             let globalId = 1;
             
@@ -348,6 +499,10 @@
             return { branchData: branchData, staffData: staffList, periods: demoPeriods, lastUpdated: "預設本地模擬資料" };
         };
 
+
+        // ==========================================
+        // 核心修正區：強化 Excel 月份/季度辨識與加總
+        // ==========================================
         const parseBranchSheet = (sheet) => {
             const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
             if (!data || data.length < 3) return null;
@@ -429,7 +584,9 @@
                     const bName = String(colB).replace(/\r\n/g, '').replace(/\n/g, '').trim();
                     if (bName !== "") {
                         currentBranch = bName; 
-                        if (!branches[currentBranch]) branches[currentBranch] = {};
+                        if (!branches[currentBranch]) {
+                            branches[currentBranch] = {};
+                        }
                     }
                 }
 
@@ -450,6 +607,16 @@
             }
 
             let finalPeriods = [...periods];
+            const parseMonth = (p) => {
+                const match = String(p).match(/(\d+)月/);
+                if (match) return parseInt(match[1], 10);
+                
+                const chnMonths = {"一":1, "二":2, "三":3, "四":4, "五":5, "六":6, "七":7, "八":8, "九":9, "十":10, "十一":11, "十二":12};
+                for (const [key, value] of Object.entries(chnMonths)) {
+                    if (String(p).includes(key + "月")) return value;
+                }
+                return null;
+            };
 
             Object.keys(branches).forEach(b => {
                 const bData = branches[b];
@@ -459,25 +626,24 @@
                     if (stats.monthlyGoal && stats.monthlyAchieved) stats.achievedRate = (stats.monthlyAchieved / stats.monthlyGoal) * 100;
                 });
 
-                const quarters = { "第一季": ["1月", "2月", "3月"], "第二季": ["4月", "5月", "6月"], "第三季": ["7月", "8月", "9月"], "第四季": ["10月", "11月", "12月"] };
+                const quarters = { "第一季": [1, 2, 3], "第二季": [4, 5, 6], "第三季": [7, 8, 9], "第四季": [10, 11, 12] };
 
                 Object.keys(quarters).forEach(qName => {
                     const targetMonths = quarters[qName];
-                    const availableMonths = targetMonths.filter(m => periods.includes(m) && bData[m]);
+                    const monthsFound = periods.filter(p => targetMonths.includes(parseMonth(p)));
                     
-                    if (availableMonths.length > 0 && !bData[qName]) {
-                        if (!finalPeriods.includes(qName)) finalPeriods.push(qName);
+                    if (monthsFound.length > 0 && !bData[qName]) {
+                        if (!finalPeriods.includes(qName)) {
+                            finalPeriods.push(qName);
+                        }
+                        
                         const qStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
                         
-                        availableMonths.forEach(m => {
+                        monthsFound.forEach(m => {
                             const s = bData[m];
-                            qStats.monthlyGoal += (s.monthlyGoal || 0); qStats.monthlyAchieved += (s.monthlyAchieved || 0); 
-                            qStats.cardSales += (s.cardSales || 0); qStats.totalVisits += (s.totalVisits || 0); 
-                            qStats.payingCustomers += (s.payingCustomers || 0); qStats.newVisits += (s.newVisits || 0); 
-                            qStats.newDeals += (s.newDeals || 0); qStats.newAmount += (s.newAmount || 0); 
-                            qStats.oldVisits += (s.oldVisits || 0); qStats.oldDeals += (s.oldDeals || 0); 
-                            qStats.oldAmount += (s.oldAmount || 0); qStats.consumeAmount += (s.consumeAmount || 0); 
-                            qStats.consumePeople += (s.consumePeople || 0);
+                            if(s) {
+                                qStats.monthlyGoal += (s.monthlyGoal || 0); qStats.monthlyAchieved += (s.monthlyAchieved || 0); qStats.cardSales += (s.cardSales || 0); qStats.totalVisits += (s.totalVisits || 0); qStats.payingCustomers += (s.payingCustomers || 0); qStats.newVisits += (s.newVisits || 0); qStats.newDeals += (s.newDeals || 0); qStats.newAmount += (s.newAmount || 0); qStats.oldVisits += (s.oldVisits || 0); qStats.oldDeals += (s.oldDeals || 0); qStats.oldAmount += (s.oldAmount || 0); qStats.consumeAmount += (s.consumeAmount || 0); qStats.consumePeople += (s.consumePeople || 0);
+                            }
                         });
 
                         qStats.achievedRate = qStats.monthlyGoal ? (qStats.monthlyAchieved / qStats.monthlyGoal) * 100 : 0;
@@ -489,6 +655,7 @@
                         qStats.oldDealRate = qStats.oldVisits ? Math.round((qStats.oldDeals / qStats.oldVisits) * 100) : 0;
                         qStats.oldAvgTicket = qStats.oldDeals ? Math.round(qStats.oldAmount / qStats.oldDeals) : 0;
                         qStats.consumeAvg = qStats.consumePeople ? Math.round(qStats.consumeAmount / qStats.consumePeople) : 0;
+
                         bData[qName] = qStats;
                     }
                 });
@@ -498,6 +665,7 @@
                 
                 if (availableAnnualMonths.length > 0 && !bData["年度"]) {
                     if (!finalPeriods.includes("年度")) finalPeriods.push("年度");
+                    
                     const yStats = { monthlyGoal: 0, monthlyAchieved: 0, cardSales: 0, totalVisits: 0, payingCustomers: 0, newVisits: 0, newDeals: 0, newAmount: 0, oldVisits: 0, oldDeals: 0, oldAmount: 0, consumeAmount: 0, consumePeople: 0 };
                     availableAnnualMonths.forEach(m => {
                         const s = bData[m];
@@ -519,7 +687,8 @@
                     yStats.oldDealRate = yStats.oldVisits ? Math.round((yStats.oldDeals / yStats.oldVisits) * 100) : 0;
                     yStats.oldAvgTicket = yStats.oldDeals ? Math.round(yStats.oldAmount / yStats.oldDeals) : 0;
                     yStats.consumeAvg = yStats.consumePeople ? Math.round(yStats.consumeAmount / yStats.consumePeople) : 0;
-                        bData["年度"] = yStats;
+
+                    bData["年度"] = yStats;
                 }
             });
 
@@ -532,10 +701,14 @@
             const sortedBranchOrder = [];
             PREDEFINED_BRANCHES.forEach(target => {
                 const match = Object.keys(branches).find(b => b === target || b.includes(target));
-                if (match && !sortedBranchOrder.includes(match)) sortedBranchOrder.push(match);
+                if (match && !sortedBranchOrder.includes(match)) {
+                    sortedBranchOrder.push(match);
+                }
             });
             Object.keys(branches).forEach(b => {
-                if (!sortedBranchOrder.includes(b)) sortedBranchOrder.push(b);
+                if (!sortedBranchOrder.includes(b)) {
+                    sortedBranchOrder.push(b);
+                }
             });
 
             return { branches, periods: finalPeriods, branchOrder: sortedBranchOrder };
@@ -786,7 +959,7 @@
                 if (!isDragging || !scrollRef.current) return;
                 e.preventDefault();
                 const x = e.pageX - scrollRef.current.offsetLeft;
-                const walk = (x - startX) * 1.5; // 滑動速度
+                const walk = (x - startX) * 1.5; 
                 scrollRef.current.scrollLeft = scrollLeft - walk;
             };
 
@@ -954,14 +1127,12 @@
             const { branches, branchOrder } = parsedData.branchData;
             const bNames = branchOrder && branchOrder.length > 0 ? branchOrder : Object.keys(branches);
 
-            // 運算累積資料 (自動抓取所有單月資料加總)
             const ytdData = bNames.map(bName => {
                 const bData = branches[bName] || {};
                 let ytdGoal = 0;
                 let ytdAchieved = 0;
                 
                 Object.keys(bData).forEach(p => {
-                    // 只把單一月份加起來，避免與「季度/年度」重複計算
                     if (/^\d+月$/.test(p)) {
                         ytdGoal += (bData[p].monthlyGoal || 0);
                         ytdAchieved += (bData[p].monthlyAchieved || 0);
@@ -974,7 +1145,6 @@
                 return { bName, ytdGoal, ytdAchieved, gap, rate };
             });
 
-            // 總和
             const totalGoal = ytdData.reduce((acc, curr) => acc + curr.ytdGoal, 0);
             const totalAchieved = ytdData.reduce((acc, curr) => acc + curr.ytdAchieved, 0);
             const totalGap = totalAchieved - totalGoal;
@@ -995,25 +1165,21 @@
                 }
             };
 
-            // --- 新增：匯出 Excel 功能 ---
             const handleExportExcel = () => {
-                // 1. 建立 Excel 標題列
                 const excelData = [
                     ['分店', '累積營收目標', '累積實際營收', '缺口/超標差額', '達成率']
                 ];
                 
-                // 2. 寫入各店純數字資料，方便後續 Excel 運算
                 ytdData.forEach(item => {
                     excelData.push([
                         item.bName,
-                        item.ytdGoal,         // 純數字目標
-                        item.ytdAchieved,     // 純數字實際營收
-                        item.gap,             // 純數字差額
-                        item.rate / 100       // 換算成小數點，給 Excel 呈現百分比用
+                        item.ytdGoal,         
+                        item.ytdAchieved,     
+                        item.gap,             
+                        item.rate / 100       
                     ]);
                 });
                 
-                // 3. 寫入總計列
                 excelData.push([
                     '全集團總計',
                     totalGoal,
@@ -1022,29 +1188,24 @@
                     totalRate / 100
                 ]);
 
-                // 4. 將資料轉為 SheetJS 的 Worksheet
                 const ws = XLSX.utils.aoa_to_sheet(excelData);
 
-                // 5. 設定達成率的 Excel 儲存格格式為百分比 (例如：95.5%)
                 const range = XLSX.utils.decode_range(ws['!ref']);
                 for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-                    // 第 4 欄 (index 4) 是達成率
                     const cellRef = XLSX.utils.encode_cell({c: 4, r: R});
                     if (ws[cellRef]) {
                         ws[cellRef].z = "0.0%"; 
                     }
                 }
 
-                // 6. 設定友善的欄寬
                 ws['!cols'] = [
-                    { wch: 20 }, // 分店
-                    { wch: 15 }, // 目標
-                    { wch: 15 }, // 實際
-                    { wch: 15 }, // 差額
-                    { wch: 12 }  // 達成率
+                    { wch: 20 }, 
+                    { wch: 15 }, 
+                    { wch: 15 }, 
+                    { wch: 15 }, 
+                    { wch: 12 }  
                 ];
 
-                // 7. 產生並下載 Excel
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "累積營收與缺口");
                 const dateStr = new Date().toISOString().slice(0, 10);
@@ -1068,7 +1229,6 @@
                     </div>
                     <div className="p-6 md:p-8">
                         {ytdData.map((item, idx) => {
-                            // 動態視覺比例運算：以「目標」和「實際」的最大值作為 100% 容器寬度
                             const maxVal = Math.max(item.ytdGoal, item.ytdAchieved, 1);
                             const targetPct = (item.ytdGoal / maxVal) * 100;
                             const achievedPct = (item.ytdAchieved / maxVal) * 100;
@@ -1086,11 +1246,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    
-                                    {/* 新版多層次立體排版：目標線移出進度條外，不再互相遮擋 */}
                                     <div className="relative w-full mt-6 mb-2">
-                                        
-                                        {/* 目標虛線與獨立標籤 (懸浮在最上層) */}
                                         <div 
                                             className="absolute top-[-24px] bottom-[-8px] z-20 pointer-events-none transition-all duration-1000"
                                             style={{ left: 0, width: `${targetPct}%` }}
@@ -1101,10 +1257,7 @@
                                             </div>
                                         </div>
 
-                                        {/* 進度條本體 */}
                                         <div className="relative w-full h-8 bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200 isolate">
-                                            
-                                            {/* 缺口紅底條紋 (僅未達標時顯示) */}
                                             {!isOver && (
                                                 <div 
                                                     className="absolute top-0 bottom-0 z-0 bg-red-400/20 transition-all duration-1000"
@@ -1113,13 +1266,10 @@
                                                     <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
                                                 </div>
                                             )}
-
-                                            {/* 實際營收進度條 */}
                                             <div 
                                                 className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-3 text-sm font-black text-white transition-all duration-1000 z-10 shadow-sm ${isOver ? 'bg-emerald-500' : 'bg-medical-500'}`}
                                                 style={{ width: `${achievedPct}%` }}
                                             >
-                                                {/* 避免極小數值時文字溢出，設定至少達 8% 才顯示文字 */}
                                                 {item.rate >= 8 ? formatPercent(item.rate) : ''}
                                             </div>
                                         </div>
@@ -1128,7 +1278,6 @@
                             );
                         })}
                         
-                        {/* 總結區塊 */}
                         <div className="mt-10 pt-6 border-t-[3px] border-slate-200">
                             <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-3">
                                 <div className="font-black text-2xl text-slate-800 mb-2 md:mb-0 flex items-center">
@@ -1143,7 +1292,6 @@
                                 </div>
                             </div>
                             
-                            {/* 總結區塊的動態多層次視覺 */}
                             {(() => {
                                 const totalMaxVal = Math.max(totalGoal, totalAchieved, 1);
                                 const totalTargetPct = (totalGoal / totalMaxVal) * 100;
@@ -1152,7 +1300,6 @@
 
                                 return (
                                     <div className="relative w-full mt-8 mb-4">
-                                        {/* 目標虛線與標籤 */}
                                         <div 
                                             className="absolute top-[-28px] bottom-[-10px] z-20 pointer-events-none transition-all duration-1000"
                                             style={{ left: 0, width: `${totalTargetPct}%` }}
@@ -1163,9 +1310,7 @@
                                             </div>
                                         </div>
 
-                                        {/* 進度條本體 */}
                                         <div className="relative w-full h-12 bg-slate-200 rounded-full overflow-hidden shadow-inner border border-slate-300 isolate">
-                                            {/* 缺口紅底條紋 */}
                                             {!isTotalOver && (
                                                 <div 
                                                     className="absolute top-0 bottom-0 z-0 bg-red-400/30 transition-all duration-1000"
@@ -1174,13 +1319,11 @@
                                                     <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ef4444 10px, #ef4444 20px)' }}></div>
                                                 </div>
                                             )}
-
-                                            {/* 實際營收進度條 */}
                                             <div 
                                                 className={`absolute top-0 left-0 bottom-0 flex items-center justify-end pr-4 text-lg font-black text-white transition-all duration-1000 z-10 shadow-md ${isTotalOver ? 'bg-emerald-500' : 'bg-medical-600'}`}
                                                 style={{ width: `${totalAchievedPct}%` }}
                                             >
-                                                {totalRate >= 5 ? formatPercent(totalRate) : ''}
+                                                {formatPercent(totalRate)}
                                             </div>
                                         </div>
                                     </div>
